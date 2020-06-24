@@ -9,7 +9,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/bin/Debug/netcoreapp3.1/callcluster-dotnet.dll",
+            "program": "${workspaceFolder}/src/bin/Debug/netcoreapp3.1/callcluster-dotnet.dll",
             "args": [],
             "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",
