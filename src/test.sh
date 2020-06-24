@@ -1,0 +1,1 @@
+dotnet run ../test-solutions/cli-sln/cli-sln.sln
