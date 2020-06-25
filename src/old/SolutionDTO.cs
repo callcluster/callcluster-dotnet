@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace callcluster_dotnet
+namespace callcluster_dotnet.old
 {
     internal class SolutionDTO
     {

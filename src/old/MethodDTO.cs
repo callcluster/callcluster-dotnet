@@ -2,7 +2,7 @@
 using System.Linq;
 using Microsoft.CodeAnalysis.Text;
 
-namespace callcluster_dotnet
+namespace callcluster_dotnet.old
 {
     internal class MethodDTO
     {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 
-namespace callcluster_dotnet
+namespace callcluster_dotnet.old
 {
     internal class FilterVisitor : SymbolVisitor
     {

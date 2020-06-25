@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace callcluster_dotnet
+namespace callcluster_dotnet.old
 {
     internal class ClassDTO
     {
