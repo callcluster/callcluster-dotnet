@@ -13,9 +13,9 @@ using System.IO;
 
 namespace callcluster_dotnet.old
 {
-    class Program
+    class OldProgram
     {
-        static async Task Main(string[] args)
+        static async Task OldMain(string[] args)
         {
             MSBuildLocator.RegisterDefaults();
             var _1 = typeof(Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions);
