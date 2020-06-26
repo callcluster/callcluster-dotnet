@@ -15,6 +15,12 @@ namespace complex_project
             car.TurnOn();
             helicopter.TurnOn();
             lambo.TurnOn();
+            TurnItOn(lambo);
+        }
+
+        private static void TurnItOn(MotorizedTransport transport)
+        {
+            transport.TurnOn();
         }
 
         static void One(){
