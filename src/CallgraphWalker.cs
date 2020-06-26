@@ -3,15 +3,15 @@ using System.Linq;
 using System.Threading;
 using callcluster_dotnet.dto;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace callcluster_dotnet
 {
-    internal class CallgraphVisitor : SymbolVisitor
+    internal class CallgraphWalker
     {
         private CancellationToken CancellationToken;
+        private SemanticModel CurrentModel;
 
-        public CallgraphVisitor(){
+        public CallgraphWalker(){
             CancellationToken=new CancellationTokenSource().Token;
             CancellationToken.Register(()=>{
                 Console.WriteLine("The action was cancelled");
@@ -30,21 +30,17 @@ namespace callcluster_dotnet
             }
         }
 
-        internal async void Visit(Project project)
+        internal void Visit(Project project)
         {
             foreach(var document in project.Documents){
                 var modelTask = document.GetSemanticModelAsync(CancellationToken);
                 modelTask.Wait();
-                var model = modelTask.Result;
-                var syntaxRoot = model.SyntaxTree.GetRoot();
-                var rootInfo = model.GetSymbolInfo(syntaxRoot);
-                rootInfo.Symbol.Accept(this);
+                this.CurrentModel = modelTask.Result;
+                if(this.CurrentModel.Language=="C#"){
+                    var walker = new CSharpCallgraphWalker();
+                    walker.Visit(this.CurrentModel);
+                }
             }
-        }
-
-        public override void DefaultVisit(ISymbol symbol)
-        {
-            Console.WriteLine(symbol.ToDisplayString());
         }
     }
 }

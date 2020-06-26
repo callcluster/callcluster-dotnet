@@ -21,7 +21,7 @@ namespace callcluster_dotnet
 
             string filePath = args[0];
 
-            CallgraphVisitor visitor = new CallgraphVisitor();
+            CallgraphWalker walker = new CallgraphWalker();
             using (var workspace = MSBuildWorkspace.Create())
             {
                 workspace.WorkspaceFailed += (sender, workspaceFailedArgs) =>
@@ -32,16 +32,16 @@ namespace callcluster_dotnet
                     }
                 };
                 if(Regex.Match(filePath,@".*\.sln$").Success){
-                    visitor.Visit(await workspace.OpenSolutionAsync(filePath));
+                    walker.Visit(await workspace.OpenSolutionAsync(filePath));
                 }else if(Regex.Match(filePath,@".*\.csproj$").Success){
-                    visitor.Visit(await workspace.OpenProjectAsync(filePath));
+                    walker.Visit(await workspace.OpenProjectAsync(filePath));
                 }else{
                     Console.WriteLine("Not a solution or a project file.");
                     return;
                 }
             }
 
-            var json = JsonConvert.SerializeObject(visitor.GetCallgraphDTO());
+            var json = JsonConvert.SerializeObject(walker.GetCallgraphDTO());
             File.WriteAllText(@"analysis.json", json);
         }
     }
