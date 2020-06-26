@@ -34,10 +34,12 @@ namespace callcluster_dotnet
         }
 
         public override void VisitInvocationExpression(InvocationExpressionSyntax node){
-            var calledSymbol = CurrentModel.GetSymbolInfo(node.Expression).Symbol.OriginalDefinition;
-            this.MethodCollector.AddMethod(calledSymbol);
-            this.CallCollector.AddCall(this.CurrentMethod,calledSymbol);
-            base.VisitInvocationExpression(node);
+            //hay que poner un sub-walker acá!! no todas las invocationExpressionSyntax tienen un MemberAccessExpressionSyntax!!
+            ISymbol called = CurrentModel.GetSymbolInfo(node.Expression).Symbol;
+            TypeInfo calledType = CurrentModel.GetTypeInfo(node.Expression);//CurrentModel.GetTypeInfo((node.Expression as MemberAccessExpressionSyntax).Expression);
+
+            this.MethodCollector.AddMethod(called);
+            this.CallCollector.AddCall(this.CurrentMethod,called,calledType);
         }
     }
 }

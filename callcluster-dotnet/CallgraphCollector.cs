@@ -23,7 +23,7 @@ namespace callcluster_dotnet
             FunctionIndexer.Add(called);
         }
 
-        public void AddCall(IMethodSymbol caller, ISymbol called)
+        public void AddCall(IMethodSymbol caller, ISymbol called, TypeInfo calledType)
         {
             long? callerIndex = FunctionIndexer.IndexOf(caller);
             long? calledIndex = FunctionIndexer.IndexOf(called);
@@ -32,7 +32,13 @@ namespace callcluster_dotnet
                 callerIndex + 
                 " calls " + 
                 called.ToString() +
-                calledIndex
+                calledIndex +
+                " from type " +
+                called.ContainingType +
+                " from symbol " +
+                called.ContainingSymbol +
+                " the called type was " +
+                calledType
             );
         }
 
