@@ -11,7 +11,7 @@ using Microsoft.CodeAnalysis;
 
 namespace callcluster_dotnet
 {
-    class Program
+    public class Program
     {
         static async Task Main(string[] args)
         {
@@ -19,7 +19,7 @@ namespace callcluster_dotnet
             File.WriteAllText(@"analysis.json", json);
         }
 
-        static async Task<CallgraphDTO> Extract(string filePath){
+        public static async Task<CallgraphDTO> Extract(string filePath){
             MSBuildLocator.RegisterDefaults();
             var _1 = typeof(Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions);
             var _2 = typeof(Microsoft.CodeAnalysis.VisualBasic.VisualBasicDiagnosticFormatter);

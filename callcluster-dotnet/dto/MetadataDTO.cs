@@ -1,6 +1,6 @@
 namespace callcluster_dotnet.dto
 {
-    internal class MetadataDTO
+    public class MetadataDTO
     {
         public string language { get; internal set; }
     }
