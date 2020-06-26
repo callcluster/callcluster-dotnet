@@ -15,11 +15,15 @@ namespace callcluster_dotnet
     {
         static async Task Main(string[] args)
         {
+            var json = JsonConvert.SerializeObject(await Extract(args[0]));
+            File.WriteAllText(@"analysis.json", json);
+        }
+
+        static async Task<CallgraphDTO> Extract(string filePath){
             MSBuildLocator.RegisterDefaults();
             var _1 = typeof(Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions);
             var _2 = typeof(Microsoft.CodeAnalysis.VisualBasic.VisualBasicDiagnosticFormatter);
 
-            string filePath = args[0];
 
             CallgraphWalker walker = new CallgraphWalker();
             using (var workspace = MSBuildWorkspace.Create())
@@ -37,12 +41,11 @@ namespace callcluster_dotnet
                     walker.Visit(await workspace.OpenProjectAsync(filePath));
                 }else{
                     Console.WriteLine("Not a solution or a project file.");
-                    return;
+                    return null;
                 }
             }
 
-            var json = JsonConvert.SerializeObject(walker.GetCallgraphDTO());
-            File.WriteAllText(@"analysis.json", json);
+            return walker.GetCallgraphDTO();
         }
     }
 }
