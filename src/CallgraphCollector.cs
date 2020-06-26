@@ -6,6 +6,7 @@ namespace callcluster_dotnet
     internal class CallgraphCollector : ICallCollector, IMethodCollector
     {
         private SymbolIndexer FunctionIndexer;
+        private SemanticModel CurrentModel;
 
         public CallgraphCollector()
         {
@@ -26,7 +27,18 @@ namespace callcluster_dotnet
         {
             long? callerIndex = FunctionIndexer.IndexOf(caller);
             long? calledIndex = FunctionIndexer.IndexOf(called);
-            Console.WriteLine(callerIndex + " calls " + calledIndex);
+            Console.WriteLine(
+                caller.ToString() + 
+                callerIndex + 
+                " calls " + 
+                called.ToString() +
+                calledIndex
+            );
+        }
+
+        internal void SetModel(SemanticModel currentModel)
+        {
+            this.CurrentModel = currentModel;
         }
     }
 }

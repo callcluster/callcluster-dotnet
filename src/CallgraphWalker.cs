@@ -39,6 +39,7 @@ namespace callcluster_dotnet
                 var modelTask = document.GetSemanticModelAsync(CancellationToken);
                 modelTask.Wait();
                 this.CurrentModel = modelTask.Result;
+                this.Collector.SetModel(CurrentModel);
                 if(this.CurrentModel.Language=="C#"){
                     var walker = new CSharpCallgraphWalker(this.Collector,this.Collector);
                     walker.Visit(this.CurrentModel);
