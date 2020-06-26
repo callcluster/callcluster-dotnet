@@ -10,12 +10,14 @@ namespace callcluster_dotnet
     {
         private CancellationToken CancellationToken;
         private SemanticModel CurrentModel;
+        private CallgraphCollector Collector;
 
         public CallgraphWalker(){
             CancellationToken=new CancellationTokenSource().Token;
             CancellationToken.Register(()=>{
                 Console.WriteLine("The action was cancelled");
             });
+            this.Collector = new CallgraphCollector();
         }
 
         internal CallgraphDTO GetCallgraphDTO()
@@ -32,12 +34,13 @@ namespace callcluster_dotnet
 
         internal void Visit(Project project)
         {
+
             foreach(var document in project.Documents){
                 var modelTask = document.GetSemanticModelAsync(CancellationToken);
                 modelTask.Wait();
                 this.CurrentModel = modelTask.Result;
                 if(this.CurrentModel.Language=="C#"){
-                    var walker = new CSharpCallgraphWalker();
+                    var walker = new CSharpCallgraphWalker(this.Collector,this.Collector);
                     walker.Visit(this.CurrentModel);
                 }
             }

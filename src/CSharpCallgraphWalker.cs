@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -9,13 +10,14 @@ namespace callcluster_dotnet
     internal class CSharpCallgraphWalker : CSharpSyntaxWalker
     {
         private SemanticModel CurrentModel;
-        private NamespaceDeclarationSyntax CurrentNamespace;
         private IMethodSymbol CurrentMethod;
-        private SymbolIndexer FunctionIndexer;
+        private ICallCollector CallCollector;
+        private IMethodCollector MethodCollector;
 
-        public CSharpCallgraphWalker():base(SyntaxWalkerDepth.Node)
+        public CSharpCallgraphWalker(ICallCollector callCollector, IMethodCollector methodCollector):base(SyntaxWalkerDepth.Node)
         {
-            this.FunctionIndexer = new SymbolIndexer();
+            this.CallCollector = callCollector;
+            this.MethodCollector = methodCollector;
         }
 
         internal void Visit(SemanticModel model)
@@ -24,25 +26,17 @@ namespace callcluster_dotnet
             Visit(this.CurrentModel.SyntaxTree.GetRoot());
         }
 
-        public override void VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
-        {
-            this.CurrentNamespace = node;
-            base.VisitNamespaceDeclaration(node);
-        }
-
         public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
             this.CurrentMethod = CurrentModel.GetDeclaredSymbol(node);
-            this.FunctionIndexer.Add(this.CurrentMethod);
+            this.MethodCollector.AddMethod(this.CurrentMethod);
             base.VisitMethodDeclaration(node);
         }
 
         public override void VisitInvocationExpression(InvocationExpressionSyntax node){
             var calledSymbol = CurrentModel.GetSymbolInfo(node.Expression).Symbol.OriginalDefinition;
-            this.FunctionIndexer.Add(calledSymbol);
-            long? calledIndex = this.FunctionIndexer.IndexOf(calledSymbol);
-            long? callerIndex = this.FunctionIndexer.IndexOf(this.CurrentMethod);
-            Console.WriteLine($"Function number {callerIndex} calls {calledIndex}");
+            this.MethodCollector.AddMethod(calledSymbol);
+            this.CallCollector.AddCall(this.CurrentMethod,calledSymbol);
             base.VisitInvocationExpression(node);
         }
     }
