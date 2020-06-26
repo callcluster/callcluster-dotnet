@@ -22,7 +22,7 @@ namespace callcluster_dotnet
 
         internal CallgraphDTO GetCallgraphDTO()
         {
-            return new CallgraphDTO();
+            return this.Collector.GetCallgraphDTO();
         }
 
         internal void Visit(Solution solution)

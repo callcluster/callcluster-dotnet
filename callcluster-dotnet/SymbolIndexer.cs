@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using callcluster_dotnet.dto;
 using Microsoft.CodeAnalysis;
 
 namespace callcluster_dotnet
@@ -26,6 +28,14 @@ namespace callcluster_dotnet
         internal long? IndexOf(ISymbol symbol)
         {
             return this.IndexesDict.GetValueOrDefault(symbol);
+        }
+
+        internal IEnumerable<FunctionDTO> GetFunctionDTOs()
+        {
+            return IndexesDict.Keys.OrderBy(s=>IndexesDict[s]).Select(s => new FunctionDTO(){
+                location = s.OriginalDefinition.Locations.FirstOrDefault().ToString(),
+                name = s.ToString()
+            });
         }
     }
 }

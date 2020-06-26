@@ -20,7 +20,10 @@ namespace callcluster_dotnet
         }
 
         public static async Task<CallgraphDTO> Extract(string filePath){
-            MSBuildLocator.RegisterDefaults();
+            if(!MSBuildLocator.IsRegistered){
+                MSBuildLocator.RegisterDefaults();
+            }
+            
             var _1 = typeof(Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions);
             var _2 = typeof(Microsoft.CodeAnalysis.VisualBasic.VisualBasicDiagnosticFormatter);
 
