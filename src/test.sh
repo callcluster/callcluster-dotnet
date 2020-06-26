@@ -1,1 +1,1 @@
-dotnet run ../test-solutions/cli-sln/cli-sln.sln
+dotnet run ../test-solutions/complex-project/complex-project.csproj
