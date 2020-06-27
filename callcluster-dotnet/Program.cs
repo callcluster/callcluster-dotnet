@@ -20,7 +20,7 @@ namespace callcluster_dotnet
         }
 
         public static async Task<CallgraphDTO> Extract(string filePath){
-            if(!MSBuildLocator.IsRegistered){
+            if(MSBuildLocator.CanRegister){
                 MSBuildLocator.RegisterDefaults();
             }
             

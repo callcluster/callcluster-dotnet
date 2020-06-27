@@ -6,6 +6,7 @@ using System.Linq;
 
 namespace callcluster_dotnet.Tests
 {
+    [Collection("Sequential")]
     public class TestClis
     {
         [Theory]
