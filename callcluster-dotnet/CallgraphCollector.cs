@@ -11,6 +11,7 @@ namespace callcluster_dotnet
         private SymbolIndexer FunctionIndexer;
         private SemanticModel CurrentModel;
         private IList<(long? from, long? to)> Calls;
+        private SymbolTree MethodTree;
 
         public CallgraphCollector()
         {
@@ -20,6 +21,11 @@ namespace callcluster_dotnet
 
         public void AddMethod(IMethodSymbol method)
         {
+            if(method.OverriddenMethod != null)
+            {
+                FunctionIndexer.Add(method.OverriddenMethod);
+                MethodTree.Add(method.OverriddenMethod, method);
+            }
             FunctionIndexer.Add(method);
         }
 
@@ -28,7 +34,7 @@ namespace callcluster_dotnet
             FunctionIndexer.Add(called);
         }
 
-        public void AddCall(IMethodSymbol caller, ISymbol called, TypeInfo calledType)
+        public void AddCall(IMethodSymbol caller, ISymbol called, ITypeSymbol calledType)
         {
             long? callerIndex = FunctionIndexer.IndexOf(caller);
             long? calledIndex = FunctionIndexer.IndexOf(called);
@@ -63,6 +69,12 @@ namespace callcluster_dotnet
 
         private IEnumerable<CallDTO> GetCallDTOs()
         {
+
+            //TODO: this.Calls should have symbols, and this method should be superb complex, handling inheritance
+            //hay que poner la intersección de: 
+            //- los métodos hijos del calledmethod con 
+            //- los métodos hijos del calledmethod que están en clases hijas del tipo del punto de la llamada
+            //NECESITO LA JERARQUÍA DE CLASES PARA ESO!!!!
             return this.Calls.Where(c=>c.to.HasValue && c.from.HasValue).Select(c=>new CallDTO(){
                 from=c.from.Value,
                 to=c.to.Value

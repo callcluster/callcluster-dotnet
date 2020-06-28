@@ -11,13 +11,25 @@ namespace complex_project
             var lambo = new Lambo();
             car.Park();
             helicopter.Land();
-            car.TurnOn();
-            helicopter.TurnOn();
-            lambo.TurnOn();
-            TurnItOn(lambo);
+            TurnOnCar(car);
+            TurnOnCopter(helicopter);
+            TurnOnLambo(lambo);
+            TurnOnTransport(lambo);
         }
 
-        private static void TurnItOn(MotorizedTransport transport)
+        private static void TurnOnCopter(Helicopter h){
+            h.TurnOn();
+        }
+
+        private static void TurnOnCar(Car c){
+            c.TurnOn();
+        }
+
+        private static void TurnOnLambo(Lambo l){
+            l.TurnOn();
+        }
+
+        private static void TurnOnTransport(MotorizedTransport transport)
         {
             transport.TurnOn();
         }
