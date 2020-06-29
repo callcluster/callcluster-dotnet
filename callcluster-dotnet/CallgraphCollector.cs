@@ -10,13 +10,14 @@ namespace callcluster_dotnet
     {
         private SymbolIndexer FunctionIndexer;
         private SemanticModel CurrentModel;
-        private IList<(long? from, long? to)> Calls;
+        private IList<(ISymbol from, ISymbol to)> Calls;
         private SymbolTree MethodTree;
 
         public CallgraphCollector()
         {
             this.FunctionIndexer = new SymbolIndexer();
-            this.Calls = new List<(long? from, long? to)>();
+            this.Calls = new List<(ISymbol from, ISymbol to)>();
+            this.MethodTree = new SymbolTree();
         }
 
         public void AddMethod(IMethodSymbol method)
@@ -39,20 +40,7 @@ namespace callcluster_dotnet
             long? callerIndex = FunctionIndexer.IndexOf(caller);
             long? calledIndex = FunctionIndexer.IndexOf(called);
 
-            this.Calls.Add((from:callerIndex,to:calledIndex));
-            Console.WriteLine(
-                caller.ToString() + 
-                callerIndex + 
-                " calls " + 
-                called.ToString() +
-                calledIndex +
-                " from type " +
-                called.ContainingType +
-                " from symbol " +
-                called.ContainingSymbol +
-                " the called type was " +
-                calledType
-            );
+            this.Calls.Add((from:caller,to:called));
         }
 
         internal CallgraphDTO GetCallgraphDTO()
@@ -72,12 +60,26 @@ namespace callcluster_dotnet
 
             //TODO: this.Calls should have symbols, and this method should be superb complex, handling inheritance
             //hay que poner la intersección de: 
-            //- los métodos hijos del calledmethod con 
-            //- los métodos hijos del calledmethod que están en clases hijas del tipo del punto de la llamada
+            //- los métodos hijos del calledmethod con (implementado)
+            //- los métodos hijos del calledmethod que están en clases hijas del tipo del punto de la llamada (not yet)
             //NECESITO LA JERARQUÍA DE CLASES PARA ESO!!!!
-            return this.Calls.Where(c=>c.to.HasValue && c.from.HasValue).Select(c=>new CallDTO(){
-                from=c.from.Value,
-                to=c.to.Value
+            return this.Calls.SelectMany((call)=>{
+                long? from = FunctionIndexer.IndexOf(call.from);
+                long? to = FunctionIndexer.IndexOf(call.to);
+
+                if(!(from.HasValue && to.HasValue))
+                {
+                    return new List<CallDTO>();
+                }
+                else
+                {
+                    return this.MethodTree.DescendantsOf(call.to).Select(s=>{
+                        return new CallDTO(){
+                            from = from.Value,
+                            to = FunctionIndexer.IndexOf(s).Value
+                        };
+                    });
+                }
             });
         }
 

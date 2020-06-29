@@ -13,32 +13,32 @@ namespace callcluster_dotnet.Tests
         public async void NotOverridenOnlyCallsBase()
         {
             CallgraphDTO dto = await Utils.Extract("inheritance/complex-project.csproj");
-            long turnOnCopter = Utils.IndexOf(dto,"complex_project.Program.TurnOnCopter(complex_project.Helicopter)");
-            long turnOnMotor = Utils.IndexOf(dto,"complex_project.MotorizedTransport.TurnOn()");
-            Assert.Single(dto.calls.Where(c=>c.from==turnOnCopter));
-            Assert.Single(dto.calls.Where(c=>c.from==turnOnCopter && c.to==turnOnMotor));
+            string turnOnCopter = "complex_project.Program.TurnOnCopter(complex_project.Helicopter)";
+            string turnOnMotor = "complex_project.MotorizedTransport.TurnOn()";
+            CallgraphAssert.CallPresent(dto,turnOnCopter,turnOnMotor);
+            CallgraphAssert.CallsFrom(dto,turnOnCopter,1);
         }
 
         [Fact]
         public async void OverridenCallsSpecific()
         {
             CallgraphDTO dto = await Utils.Extract("inheritance/complex-project.csproj");
-            long turnOnProgram = Utils.IndexOf(dto,"complex_project.Program.TurnOnLambo(complex_project.Lambo)");
-            long turnOnLambo = Utils.IndexOf(dto,"complex_project.Lambo.TurnOn()");
-            Assert.Single(dto.calls.Where(c=>c.from==turnOnProgram));
-            Assert.Single(dto.calls.Where(c=>c.from==turnOnProgram && c.to==turnOnLambo));
+            string turnOnProgram = "complex_project.Program.TurnOnLambo(complex_project.Lambo)";
+            string turnOnLambo = "complex_project.Lambo.TurnOn()";
+            CallgraphAssert.CallsFrom(dto,turnOnProgram);
+            CallgraphAssert.CallPresent(dto,turnOnProgram,turnOnLambo);
         }
 
         [Fact]
         public async void GeneralCallsBoth()
         {
             CallgraphDTO dto = await Utils.Extract("inheritance/complex-project.csproj");
-            long turnOnProgram = Utils.IndexOf(dto,"complex_project.Program.TurnOnTransport(complex_project.Lambo)");
-            long turnOnLambo = Utils.IndexOf(dto,"complex_project.Lambo.TurnOn()");
-            long turnOnMotor = Utils.IndexOf(dto,"complex_project.MotorizedTransport.TurnOn()");
-            Assert.True(dto.calls.Where(c=>c.from==turnOnProgram).ToList().Count==2);
-            Assert.Single(dto.calls.Where(c=>c.from==turnOnProgram && c.from==turnOnLambo));
-            Assert.Single(dto.calls.Where(c=>c.from==turnOnProgram && c.from==turnOnMotor));
+            string turnOnProgram = "complex_project.Program.TurnOnTransport(complex_project.MotorizedTransport)";// 9
+            string turnOnLambo = "complex_project.Lambo.TurnOn()";// 3
+            string turnOnMotor = "complex_project.MotorizedTransport.TurnOn()";// 2
+            CallgraphAssert.CallsFrom(dto,turnOnProgram,2);
+            CallgraphAssert.CallPresent(dto,turnOnProgram,turnOnLambo);
+            CallgraphAssert.CallPresent(dto,turnOnProgram,turnOnMotor);
         }
     }
 }

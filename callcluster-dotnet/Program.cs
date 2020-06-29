@@ -15,7 +15,8 @@ namespace callcluster_dotnet
     {
         static async Task Main(string[] args)
         {
-            var json = JsonConvert.SerializeObject(await Extract(args[0]));
+            var extracted = await Extract(args[0]);
+            var json = JsonConvert.SerializeObject(extracted);
             File.WriteAllText(@"analysis.json", json);
         }
 

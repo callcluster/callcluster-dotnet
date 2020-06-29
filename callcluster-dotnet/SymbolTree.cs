@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using callcluster_dotnet.dto;
 using Microsoft.CodeAnalysis;
 
 namespace callcluster_dotnet
@@ -26,6 +27,21 @@ namespace callcluster_dotnet
             }
             children.Add(child);
         }
+        /// <summary>
+        /// Descendants of a symbol. It doesn't check if the tree really is a tree.
+        /// </summary>
+        /// <param name="parent">root node from which to analyze</param>
+        /// <returns>list of all descendants</returns>
+        internal IEnumerable<ISymbol> DescendantsOf(ISymbol parent)
+        {
+            if(!ParentToChildren.ContainsKey(parent)){
+                return new List<ISymbol>(){parent};
+            }else{
 
+                return ParentToChildren[parent].SelectMany((s)=>{
+                    return DescendantsOf(s);
+                }).Append(parent);
+            }
+        }
     }
 }

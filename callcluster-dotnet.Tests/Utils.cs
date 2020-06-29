@@ -20,7 +20,15 @@ namespace callcluster_dotnet.Tests
         }
 
         public static long IndexOf(CallgraphDTO callgraph, string name){
-            return callgraph.functions.ToList().FindIndex(x=>x.name==name);
+            var i = callgraph.functions.ToList().FindIndex(x=>x.name==name);
+            if(i<0)
+            {
+                throw new System.Exception($"{name} not present in functions.");
+            }
+            else
+            {
+                return i;
+            }
         }
     }
 
