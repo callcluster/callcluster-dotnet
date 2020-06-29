@@ -4,6 +4,6 @@ namespace callcluster_dotnet
 {
     public interface ICallCollector
     {
-        void AddCall(IMethodSymbol caller, ISymbol called, ITypeSymbol calledType);
+        void AddCall(IMethodSymbol caller, IMethodSymbol called, ITypeSymbol calledType);
     }
 }

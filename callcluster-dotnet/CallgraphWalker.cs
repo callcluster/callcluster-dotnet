@@ -41,7 +41,7 @@ namespace callcluster_dotnet
                 this.CurrentModel = modelTask.Result;
                 this.Collector.SetModel(CurrentModel);
                 if(this.CurrentModel.Language=="C#"){
-                    var walker = new CSharpCallgraphWalker(this.Collector,this.Collector);
+                    var walker = new CSharpCallgraphWalker(this.Collector,this.Collector,this.Collector);
                     walker.Visit(this.CurrentModel);
                 }
             }

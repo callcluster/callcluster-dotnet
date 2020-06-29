@@ -6,18 +6,27 @@ using Microsoft.CodeAnalysis;
 
 namespace callcluster_dotnet
 {
-    internal class CallgraphCollector : ICallCollector, IMethodCollector
+    internal class CallgraphCollector : ICallCollector, IMethodCollector, IClassCollector
     {
         private SymbolIndexer FunctionIndexer;
         private SemanticModel CurrentModel;
-        private IList<(ISymbol from, ISymbol to)> Calls;
-        private SymbolTree MethodTree;
+        private IList<(IMethodSymbol from, IMethodSymbol to, ITypeSymbol type)> Calls;
+
+        /// <summary>
+        /// A tree of overriden methods and how the methods override each other. The parent method is overriden by the child.
+        /// </summary>
+        private Tree<IMethodSymbol> MethodTree;
+        /// <summary>
+        /// A tree of inherited classes.
+        /// </summary>
+        private Tree<ITypeSymbol> ClassTree;
 
         public CallgraphCollector()
         {
             this.FunctionIndexer = new SymbolIndexer();
-            this.Calls = new List<(ISymbol from, ISymbol to)>();
-            this.MethodTree = new SymbolTree();
+            this.Calls = new List<(IMethodSymbol from, IMethodSymbol to, ITypeSymbol type)>();
+            this.MethodTree = new Tree<IMethodSymbol>();
+            this.ClassTree = new Tree<ITypeSymbol>();
         }
 
         public void AddMethod(IMethodSymbol method)
@@ -35,12 +44,12 @@ namespace callcluster_dotnet
             FunctionIndexer.Add(called);
         }
 
-        public void AddCall(IMethodSymbol caller, ISymbol called, ITypeSymbol calledType)
+        public void AddCall(IMethodSymbol caller, IMethodSymbol called, ITypeSymbol calledType)
         {
             long? callerIndex = FunctionIndexer.IndexOf(caller);
             long? calledIndex = FunctionIndexer.IndexOf(called);
 
-            this.Calls.Add((from:caller,to:called));
+            this.Calls.Add((from:caller,to:called,type:calledType));
         }
 
         internal CallgraphDTO GetCallgraphDTO()
@@ -73,19 +82,42 @@ namespace callcluster_dotnet
                 }
                 else
                 {
-                    return this.MethodTree.DescendantsOf(call.to).Select(s=>{
-                        return new CallDTO(){
-                            from = from.Value,
-                            to = FunctionIndexer.IndexOf(s).Value
+                    IEnumerable<IMethodSymbol> targetMethods = this.MethodTree.DescendantsOf(call.to);
+                    IEnumerable<ITypeSymbol> descendantClasses = this.ClassTree.DescendantsOf(call.type);
+                    IEnumerable<IMethodSymbol> filteredMethods = targetMethods.Where(s=>descendantClasses.Contains(s.ContainingType));
+
+                    if(filteredMethods.Any()){
+                        return targetMethods.Select(s=>{
+                            return new CallDTO(){
+                                from = from.Value,
+                                to = FunctionIndexer.IndexOf(s).Value
+                            };
+                        });
+                    }else{
+                        return new List<CallDTO>(){ 
+                            new CallDTO(){
+                                from = from.Value,
+                                to = to.Value
+                            }
                         };
-                    });
+                    }
                 }
             });
         }
-
         internal void SetModel(SemanticModel currentModel)
         {
             this.CurrentModel = currentModel;
+        }
+
+        public void AddClass(INamedTypeSymbol symbol)
+        {
+            if(symbol.BaseType != null)
+            {
+                ClassTree.Add(symbol.BaseType,symbol);
+                if(symbol.BaseType != symbol){//object inherits from object
+                    AddClass(symbol.BaseType);
+                }
+            }
         }
     }
 }

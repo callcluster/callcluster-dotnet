@@ -13,17 +13,25 @@ namespace callcluster_dotnet
         private IMethodSymbol CurrentMethod;
         private ICallCollector CallCollector;
         private IMethodCollector MethodCollector;
+        private IClassCollector ClassCollector;
 
-        public CSharpCallgraphWalker(ICallCollector callCollector, IMethodCollector methodCollector):base(SyntaxWalkerDepth.Node)
+        public CSharpCallgraphWalker(ICallCollector callCollector, IMethodCollector methodCollector, IClassCollector classCollector):base(SyntaxWalkerDepth.Node)
         {
             this.CallCollector = callCollector;
             this.MethodCollector = methodCollector;
+            this.ClassCollector = classCollector;
         }
 
         internal void Visit(SemanticModel model)
         {
             this.CurrentModel = model;
             Visit(this.CurrentModel.SyntaxTree.GetRoot());
+        }
+
+        public override void VisitClassDeclaration(ClassDeclarationSyntax node){
+            INamedTypeSymbol symbol = CurrentModel.GetDeclaredSymbol(node);
+            this.ClassCollector.AddClass(symbol);
+            Visit(node);
         }
 
         public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
@@ -37,8 +45,8 @@ namespace callcluster_dotnet
             //hay que poner un sub-walker acá!! no todas las invocationExpressionSyntax tienen un MemberAccessExpressionSyntax!!
             var visitor = new InvocationExpressionVisitor();
             node.Expression.Accept(visitor);
-            ISymbol called = CurrentModel.GetSymbolInfo(node.Expression).Symbol;
             TypeInfo calledType = CurrentModel.GetTypeInfo(node.Expression);//CurrentModel.GetTypeInfo((node.Expression as MemberAccessExpressionSyntax).Expression);
+            IMethodSymbol called = visitor.GetCalledMethod(this.CurrentModel);//CurrentModel.GetSymbolInfo(node.Expression).Symbol;
 
             this.MethodCollector.AddMethod(called);
             this.CallCollector.AddCall(this.CurrentMethod,called,visitor.GetCalledType(this.CurrentModel));
@@ -48,13 +56,8 @@ namespace callcluster_dotnet
     internal class InvocationExpressionVisitor : CSharpSyntaxVisitor
     {
         private SyntaxNode VisitedNode;
-
         private MemberAccessExpressionSyntax MemberAccessNode;
         private IdentifierNameSyntax IndentifierNameNode;
-
-        public InvocationExpressionVisitor()
-        {
-        }
 
         override public void DefaultVisit(SyntaxNode node){
             this.VisitedNode = node;
@@ -77,6 +80,32 @@ namespace callcluster_dotnet
                 return model.GetSymbolInfo(IndentifierNameNode).Symbol.ContainingType;
             }else{
                 return null;
+            }
+        }
+
+        internal IMethodSymbol GetCalledMethod(SemanticModel model)
+        {
+            ExpressionSyntax nonNullNode;
+            if(MemberAccessNode != null){
+                nonNullNode=MemberAccessNode;
+            } else if (IndentifierNameNode != null){
+                nonNullNode=IndentifierNameNode;
+            }else{
+                return null;
+            }
+            InvocationExpressionSymbolVisitor visitor = new InvocationExpressionSymbolVisitor();
+            model.GetSymbolInfo(nonNullNode).Symbol.Accept(visitor);
+            return visitor.MethodSymbol;
+        }
+
+        private class InvocationExpressionSymbolVisitor : SymbolVisitor
+        {
+            public IMethodSymbol MethodSymbol { get; private set; }
+
+            public override void VisitMethod(IMethodSymbol symbol)
+            {
+                this.MethodSymbol = symbol;
+                this.VisitMethod(symbol);
             }
         }
     }

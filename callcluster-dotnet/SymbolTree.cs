@@ -6,23 +6,23 @@ using Microsoft.CodeAnalysis;
 
 namespace callcluster_dotnet
 {
-    internal class SymbolTree
+    internal class Tree<T>
     {
-        private IDictionary<ISymbol,ICollection<ISymbol>> ParentToChildren;
-        private IDictionary<ISymbol,ISymbol> ChildToParent;
+        private IDictionary<T,ICollection<T>> ParentToChildren;
+        private IDictionary<T,T> ChildToParent;
 
-        public SymbolTree()
+        public Tree()
         {
-            this.ChildToParent = new Dictionary<ISymbol,ISymbol>();
-            this.ParentToChildren = new Dictionary<ISymbol,ICollection<ISymbol>>();
+            this.ChildToParent = new Dictionary<T,T>();
+            this.ParentToChildren = new Dictionary<T,ICollection<T>>();
         }
-        internal void Add(ISymbol parent, ISymbol child)
+        internal void Add(T parent, T child)
         {
-            this.ChildToParent.Add(child,parent);
-            ICollection<ISymbol> children;
+            this.ChildToParent.TryAdd(child,parent);
+            ICollection<T> children;
             this.ParentToChildren.TryGetValue(parent,out children);
             if(children==null){
-                children = new HashSet<ISymbol>();
+                children = new HashSet<T>();
                 this.ParentToChildren[parent] = children;
             }
             children.Add(child);
@@ -32,10 +32,10 @@ namespace callcluster_dotnet
         /// </summary>
         /// <param name="parent">root node from which to analyze</param>
         /// <returns>list of all descendants</returns>
-        internal IEnumerable<ISymbol> DescendantsOf(ISymbol parent)
+        internal IEnumerable<T> DescendantsOf(T parent)
         {
             if(!ParentToChildren.ContainsKey(parent)){
-                return new List<ISymbol>(){parent};
+                return new List<T>(){parent};
             }else{
 
                 return ParentToChildren[parent].SelectMany((s)=>{
