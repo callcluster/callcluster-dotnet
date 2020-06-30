@@ -42,13 +42,13 @@ namespace callcluster_dotnet.Tests
         }
 
         [Fact]
-        public async void GeneralCallsBoth()
+        public async void GeneralCallsAll()
         {
             CallgraphDTO dto = await Utils.Extract("inheritance/complex-project.csproj");
             string turnOnProgram = "complex_project.Program.TurnOnTransport(complex_project.MotorizedTransport)";// 9
             string turnOnLambo = "complex_project.Lambo.TurnOn()";// 3
             string turnOnMotor = "complex_project.MotorizedTransport.TurnOn()";// 2
-            CallgraphAssert.CallsFrom(dto,turnOnProgram,2);
+            CallgraphAssert.CallsFrom(dto,turnOnProgram,5);
             CallgraphAssert.CallPresent(dto,turnOnProgram,turnOnLambo);
             CallgraphAssert.CallPresent(dto,turnOnProgram,turnOnMotor);
         }

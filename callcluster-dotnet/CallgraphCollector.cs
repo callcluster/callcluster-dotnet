@@ -86,21 +86,17 @@ namespace callcluster_dotnet
                     IEnumerable<ITypeSymbol> descendantClasses = this.ClassTree.DescendantsOf(call.type);
                     IEnumerable<IMethodSymbol> filteredMethods = targetMethods.Where(s=>descendantClasses.Contains(s.ContainingType));
 
-                    if(filteredMethods.Any()){
-                        return targetMethods.Select(s=>{
-                            return new CallDTO(){
-                                from = from.Value,
-                                to = FunctionIndexer.IndexOf(s).Value
-                            };
-                        });
-                    }else{
-                        return new List<CallDTO>(){ 
-                            new CallDTO(){
-                                from = from.Value,
-                                to = to.Value
-                            }
-                        };
+                    if(!filteredMethods.Contains(call.to)){
+                        filteredMethods = filteredMethods.Append(call.to);
                     }
+
+                    return filteredMethods.Select(s=>{
+                        return new CallDTO(){
+                            from = from.Value,
+                            to = FunctionIndexer.IndexOf(s).Value
+                        };
+                    });
+
                 }
             });
         }
