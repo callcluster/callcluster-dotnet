@@ -28,28 +28,58 @@ namespace callcluster_dotnet
             Visit(this.CurrentModel.SyntaxTree.GetRoot());
         }
 
-        public override void VisitClassDeclaration(ClassDeclarationSyntax node){
+        public override void VisitClassDeclaration(ClassDeclarationSyntax node)
+        {
             INamedTypeSymbol symbol = CurrentModel.GetDeclaredSymbol(node);
             this.ClassCollector.AddClass(symbol);
             base.VisitClassDeclaration(node);
         }
 
-        public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
+        private void VisitBaseMethodDeclarationSyntax(BaseMethodDeclarationSyntax node)
         {
             this.CurrentMethod = CurrentModel.GetDeclaredSymbol(node);
             this.MethodCollector.AddMethod(this.CurrentMethod);
+        }
+        public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
+        {
+            VisitBaseMethodDeclarationSyntax(node);
             base.VisitMethodDeclaration(node);
+            this.CurrentMethod = null;
         }
 
-        public override void VisitInvocationExpression(InvocationExpressionSyntax node){
-            //hay que poner un sub-walker acá!! no todas las invocationExpressionSyntax tienen un MemberAccessExpressionSyntax!!
+        public override void VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
+        {
+            VisitBaseMethodDeclarationSyntax(node);
+            if(node.Initializer!=null){
+                ISymbol initializer = this.CurrentModel.GetSymbolInfo(node.Initializer).Symbol;
+                InvocationExpressionSymbolVisitor visitor = new InvocationExpressionSymbolVisitor();
+                initializer.Accept(visitor);
+                this.CallCollector.AddCall(this.CurrentMethod,visitor.MethodSymbol,initializer.ContainingType);
+            }
+            base.VisitConstructorDeclaration(node);
+            this.CurrentMethod = null;
+        }
+
+        public override void VisitInvocationExpression(InvocationExpressionSyntax node)
+        {
             var visitor = new InvocationExpressionVisitor();
             node.Expression.Accept(visitor);
-            TypeInfo calledType = CurrentModel.GetTypeInfo(node.Expression);//CurrentModel.GetTypeInfo((node.Expression as MemberAccessExpressionSyntax).Expression);
-            IMethodSymbol called = visitor.GetCalledMethod(this.CurrentModel);//CurrentModel.GetSymbolInfo(node.Expression).Symbol;
+            TypeInfo calledType = CurrentModel.GetTypeInfo(node.Expression);
+            IMethodSymbol called = visitor.GetCalledMethod(this.CurrentModel);
 
             this.MethodCollector.AddMethod(called);
             this.CallCollector.AddCall(this.CurrentMethod,called,visitor.GetCalledType(this.CurrentModel));
+            base.VisitInvocationExpression(node);
+        }
+
+        public override void VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
+        {
+            var visitor = new InvocationExpressionSymbolVisitor();
+            ISymbol symbol = this.CurrentModel.GetSymbolInfo(node).Symbol;
+            symbol.Accept(visitor);
+            this.MethodCollector.AddMethod(visitor.MethodSymbol);
+            this.CallCollector.AddCall(this.CurrentMethod,visitor.MethodSymbol,visitor.MethodSymbol.ContainingType);
+            base.VisitObjectCreationExpression(node);
         }
     }
 
@@ -97,15 +127,15 @@ namespace callcluster_dotnet
             model.GetSymbolInfo(nonNullNode).Symbol.Accept(visitor);
             return visitor.MethodSymbol;
         }
+    }
 
-        private class InvocationExpressionSymbolVisitor : SymbolVisitor
+    internal class InvocationExpressionSymbolVisitor : SymbolVisitor
+    {
+        public IMethodSymbol MethodSymbol { get; private set; }
+
+        public override void VisitMethod(IMethodSymbol symbol)
         {
-            public IMethodSymbol MethodSymbol { get; private set; }
-
-            public override void VisitMethod(IMethodSymbol symbol)
-            {
-                this.MethodSymbol = symbol;
-            }
+            this.MethodSymbol = symbol;
         }
     }
 }

@@ -66,12 +66,6 @@ namespace callcluster_dotnet
 
         private IEnumerable<CallDTO> GetCallDTOs()
         {
-
-            //TODO: this.Calls should have symbols, and this method should be superb complex, handling inheritance
-            //hay que poner la intersección de: 
-            //- los métodos hijos del calledmethod con (implementado)
-            //- los métodos hijos del calledmethod que están en clases hijas del tipo del punto de la llamada (not yet)
-            //NECESITO LA JERARQUÍA DE CLASES PARA ESO!!!!
             return this.Calls.SelectMany((call)=>{
                 long? from = FunctionIndexer.IndexOf(call.from);
                 long? to = FunctionIndexer.IndexOf(call.to);
