@@ -2,7 +2,7 @@ using System;
 
 namespace complex_project
 {
-    internal class Lambo : MotorizedTransport
+    internal class Lambo : Car
     {
         public Lambo()
         {

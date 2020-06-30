@@ -20,6 +20,18 @@ namespace callcluster_dotnet.Tests
         }
 
         [Fact]
+        public async void CarCanBeLambo()
+        {
+            CallgraphDTO dto = await Utils.Extract("inheritance/complex-project.csproj");
+            string turnOnCar = "complex_project.Program.TurnOnCar(complex_project.Car)";
+            string turnOnMotor = "complex_project.MotorizedTransport.TurnOn()";
+            string turnOnLambo = "complex_project.Lambo.TurnOn()";
+            CallgraphAssert.CallPresent(dto,turnOnCar,turnOnMotor);
+            CallgraphAssert.CallPresent(dto,turnOnCar,turnOnLambo);
+            CallgraphAssert.CallsFrom(dto,turnOnCar,2);
+        }
+
+        [Fact]
         public async void OverridenCallsSpecific()
         {
             CallgraphDTO dto = await Utils.Extract("inheritance/complex-project.csproj");
