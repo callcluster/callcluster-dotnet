@@ -31,7 +31,7 @@ namespace callcluster_dotnet
         public override void VisitClassDeclaration(ClassDeclarationSyntax node){
             INamedTypeSymbol symbol = CurrentModel.GetDeclaredSymbol(node);
             this.ClassCollector.AddClass(symbol);
-            Visit(node);
+            base.VisitClassDeclaration(node);
         }
 
         public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
@@ -105,7 +105,6 @@ namespace callcluster_dotnet
             public override void VisitMethod(IMethodSymbol symbol)
             {
                 this.MethodSymbol = symbol;
-                this.VisitMethod(symbol);
             }
         }
     }
