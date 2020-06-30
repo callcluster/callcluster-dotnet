@@ -15,6 +15,12 @@ namespace complex_project
             TurnOnCopter(helicopter);
             TurnOnLambo(lambo);
             TurnOnTransport(lambo);
+            TurnOnWaterVehicle(new BigShip());
+        }
+
+        private static void TurnOnWaterVehicle(WaterVehicle waterVehicle)
+        {
+            waterVehicle.TurnOn();
         }
 
         private static void TurnOnCopter(Helicopter h){
@@ -33,5 +39,7 @@ namespace complex_project
         {
             transport.TurnOn();
         }
+
+
     }
 }

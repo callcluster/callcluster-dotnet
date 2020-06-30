@@ -32,6 +32,20 @@ namespace callcluster_dotnet.Tests
         }
 
         [Fact]
+        public async void WaterVehicleCanBeShip()
+        {
+            CallgraphDTO dto = await Utils.Extract("inheritance/complex-project.csproj");
+            string turnOnProgram = "complex_project.Program.TurnOnWaterVehicle(complex_project.WaterVehicle)";
+            string turnOnWaterVehicle = "complex_project.WaterVehicle.TurnOn()";
+            string turnOnSmallShip = "complex_project.SmallShip.TurnOn()";
+            string turnOnBigShip = "complex_project.BigShip.TurnOn()";
+            CallgraphAssert.CallPresent(dto,turnOnProgram,turnOnSmallShip);
+            CallgraphAssert.CallPresent(dto,turnOnProgram,turnOnBigShip);
+            CallgraphAssert.CallPresent(dto,turnOnProgram,turnOnWaterVehicle);
+            CallgraphAssert.CallsFrom(dto,turnOnProgram,3);
+        }
+
+        [Fact]
         public async void OverridenCallsSpecific()
         {
             CallgraphDTO dto = await Utils.Extract("inheritance/complex-project.csproj");
