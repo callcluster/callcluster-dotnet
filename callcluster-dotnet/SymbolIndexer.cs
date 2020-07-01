@@ -32,9 +32,22 @@ namespace callcluster_dotnet
 
         internal IEnumerable<FunctionDTO> GetFunctionDTOs()
         {
+
+            string LocationAsString(Location location)
+            {
+                if(location.IsInMetadata)
+                {
+                    return "module: "+location.MetadataModule.ToString();
+                }
+                else
+                {
+                    var span = location.GetMappedLineSpan();
+                    return "file: "+span.Path+" line: "+ span.StartLinePosition.Line;
+                }
+            }
             return IndexesDict.Keys.OrderBy(s=>IndexesDict[s]).Select(s => new FunctionDTO(){
-                location = s.OriginalDefinition.Locations.FirstOrDefault().ToString(),
-                name = s.ToString()
+                location = LocationAsString(s.OriginalDefinition.Locations.FirstOrDefault()),
+                name = s.ToDisplayString()
             });
         }
     }
