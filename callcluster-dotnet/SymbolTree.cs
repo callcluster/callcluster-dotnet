@@ -9,16 +9,12 @@ namespace callcluster_dotnet
     internal class Tree<T>
     {
         private IDictionary<T,ICollection<T>> ParentToChildren;
-        private IDictionary<T,T> ChildToParent;
-
         public Tree()
         {
-            this.ChildToParent = new Dictionary<T,T>();
             this.ParentToChildren = new Dictionary<T,ICollection<T>>();
         }
         internal void Add(T parent, T child)
         {
-            this.ChildToParent.TryAdd(child,parent);
             ICollection<T> children;
             this.ParentToChildren.TryGetValue(parent,out children);
             if(children==null){

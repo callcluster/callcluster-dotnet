@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using callcluster_dotnet.dto;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.FindSymbols;
 
 namespace callcluster_dotnet
 {
@@ -106,6 +107,15 @@ namespace callcluster_dotnet
                 ClassTree.Add(symbol.BaseType,symbol);
                 if(symbol.BaseType != symbol){//object inherits from object
                     AddClass(symbol.BaseType);
+                }
+            }
+            foreach(var @interface in symbol.Interfaces){
+                ClassTree.Add(@interface, symbol);
+                foreach(var abstractMethod in @interface.GetMembers()){
+                    var implementation = symbol.FindImplementationForInterfaceMember(abstractMethod);
+                    this.AddMethod(abstractMethod as IMethodSymbol);
+                    this.AddMethod(implementation as IMethodSymbol);
+                    this.MethodTree.Add(abstractMethod as IMethodSymbol, implementation as IMethodSymbol);
                 }
             }
         }
