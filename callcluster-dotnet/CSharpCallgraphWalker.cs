@@ -75,18 +75,40 @@ namespace callcluster_dotnet
             this.CurrentMethod = previousMethod;
         }
 
-        public override void VisitInvocationExpression(InvocationExpressionSyntax node)
+        public override void VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
         {
-            var visitor = new InvocationExpressionVisitor();
-            node.Expression.Accept(visitor);
-            TypeInfo calledType = CurrentModel.GetTypeInfo(node.Expression);
-            IMethodSymbol called = visitor.GetCalledMethod(this.CurrentModel);
-
-            this.MethodCollector.AddMethod(called);
-            this.CallCollector.AddCall(this.CurrentMethod,called,visitor.GetCalledType(this.CurrentModel));
-            base.VisitInvocationExpression(node);
+            if(this.CurrentMethod == null)
+            {
+                this.Visit(node.Expression);
+                return;
+            }
+            var visitor = new InvocationExpressionSymbolVisitor();
+            this.CurrentModel.GetSymbolInfo(node).Symbol.Accept(visitor);
+            if(visitor.MethodSymbol!=null)
+            {
+                var calledType = this.CurrentModel.GetTypeInfo(node.Expression).Type;
+                this.MethodCollector.AddMethod(visitor.MethodSymbol);
+                this.CallCollector.AddCall(this.CurrentMethod,visitor.MethodSymbol,calledType);
+            }
+            this.Visit(node.Expression);
         }
 
+        public override void VisitIdentifierName(IdentifierNameSyntax node)
+        {
+            if(this.CurrentMethod == null)
+            {
+                return;
+            }
+            var visitor = new InvocationExpressionSymbolVisitor();
+            this.CurrentModel.GetSymbolInfo(node).Symbol.Accept(visitor);
+            if(visitor.MethodSymbol!=null)
+            {
+                var calledType = visitor.MethodSymbol.ContainingType;
+                this.MethodCollector.AddMethod(visitor.MethodSymbol);
+                this.CallCollector.AddCall(this.CurrentMethod,visitor.MethodSymbol,calledType);
+            }
+            base.VisitIdentifierName(node);
+        }
         public override void VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
         {
             var visitor = new InvocationExpressionSymbolVisitor();
