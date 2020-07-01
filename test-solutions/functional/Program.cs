@@ -12,9 +12,10 @@ namespace functional
 
         private void MapNumbers(){
             string AsNumberPrivate(int n){ // LocalFunctionStatementSyntax
+                (new Thing()).Transform(1,2);
                 return "h";
             }
-            (new int[] {1,2,3,4,5}).Select(AsNumbersMethod);//IdentifierNameSyntaxIdentifierNameSyntax
+            (new int[] {1,2,3,4,5}).Select(AsNumbersMethod);//IdentifierNameSyntax
             (new int[] {1,2,3,4,5}).Select(AsNumberPrivate);//IdentifierNameSyntax
             (new int[] {1,2,3,4,5}).Select((new Thing()).Transform);//MemberAccessExpressionSyntax
         }

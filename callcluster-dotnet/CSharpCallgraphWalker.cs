@@ -40,15 +40,30 @@ namespace callcluster_dotnet
             this.CurrentMethod = CurrentModel.GetDeclaredSymbol(node);
             this.MethodCollector.AddMethod(this.CurrentMethod);
         }
+
+        public override void VisitLocalFunctionStatement(LocalFunctionStatementSyntax node)
+        {
+            var previousMethod = this.CurrentMethod;
+            var symbol = CurrentModel.GetDeclaredSymbol(node);
+            var visitor = new InvocationExpressionSymbolVisitor();
+            symbol.Accept(visitor);
+            this.CurrentMethod = visitor.MethodSymbol;
+            this.MethodCollector.AddMethod(this.CurrentMethod);
+            base.VisitLocalFunctionStatement(node);
+            this.CurrentMethod = previousMethod;
+        }
+
         public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
+            var previousMethod = this.CurrentMethod;
             VisitBaseMethodDeclarationSyntax(node);
             base.VisitMethodDeclaration(node);
-            this.CurrentMethod = null;
+            this.CurrentMethod = previousMethod;
         }
 
         public override void VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
         {
+            var previousMethod = this.CurrentMethod;
             VisitBaseMethodDeclarationSyntax(node);
             if(node.Initializer!=null){
                 ISymbol initializer = this.CurrentModel.GetSymbolInfo(node.Initializer).Symbol;
@@ -57,7 +72,7 @@ namespace callcluster_dotnet
                 this.CallCollector.AddCall(this.CurrentMethod,visitor.MethodSymbol,initializer.ContainingType);
             }
             base.VisitConstructorDeclaration(node);
-            this.CurrentMethod = null;
+            this.CurrentMethod = previousMethod;
         }
 
         public override void VisitInvocationExpression(InvocationExpressionSyntax node)
