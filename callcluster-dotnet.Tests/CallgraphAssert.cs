@@ -14,6 +14,6 @@ public class CallgraphAssert : Assert
     internal static void CallsFrom(CallgraphDTO dto, string function, int quantity=1)
     {
         long fromIndex = Utils.IndexOf(dto,function);
-        Assert.True(dto.calls.Where(c=>c.from==fromIndex).ToList().Count()==quantity);
+        Assert.Equal(quantity,dto.calls.Where(c=>c.from==fromIndex).ToList().Count());
     }
 }
