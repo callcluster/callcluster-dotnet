@@ -29,5 +29,10 @@ namespace interfaces
         {
             turnable.TurnOn();
         }
+
+        private static void BreakThings(IBreakable breakable)
+        {
+            breakable.Break();
+        }
     }
 }

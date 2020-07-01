@@ -22,5 +22,13 @@ namespace callcluster_dotnet.Tests
             CallgraphAssert.CallPresent(dto,turnOnProgram,turnOnTelevision);
             CallgraphAssert.CallsFrom(dto,turnOnProgram,3);
         }
+
+        [Fact]
+        public async void BreakBreakableCallsAllImplementations()
+        {
+            CallgraphDTO dto = await Utils.Extract("interfaces/interfaces.csproj");
+            string breakProgram = "interfaces.Program.BreakThings(interfaces.IBreakable)";
+            CallgraphAssert.CallsFrom(dto, breakProgram, 6);//interface, tv, microwave, Delicate, Glass, Pottery
+        }
     }
 }
