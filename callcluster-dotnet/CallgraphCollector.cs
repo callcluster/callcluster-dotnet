@@ -30,16 +30,6 @@ namespace callcluster_dotnet
             this.ClassTree = new Tree<ITypeSymbol>();
         }
 
-        public void AddMethod(IMethodSymbol method)
-        {
-            if(method.OverriddenMethod != null)
-            {
-                FunctionIndexer.Add(method.OverriddenMethod);
-                MethodTree.Add(method.OverriddenMethod, method);
-            }
-            FunctionIndexer.Add(method);
-        }
-
         public void AddMethod(ISymbol called)
         {
             FunctionIndexer.Add(called);
@@ -118,6 +108,27 @@ namespace callcluster_dotnet
                     this.MethodTree.Add(abstractMethod as IMethodSymbol, implementation as IMethodSymbol);
                 }
             }
+        }
+
+
+        public void AddMethod(IMethodSymbol method)
+        {
+            if(method.OverriddenMethod != null)
+            {
+                FunctionIndexer.Add(method.OverriddenMethod);
+                MethodTree.Add(method.OverriddenMethod, method);
+            }
+            FunctionIndexer.Add(method);
+        }
+
+        public void AddMethod(IMethodSymbol method, MethodAnalysisData analysisData)
+        {
+            if(method.OverriddenMethod != null)
+            {
+                FunctionIndexer.Add(method.OverriddenMethod);
+                MethodTree.Add(method.OverriddenMethod, method);
+            }
+            FunctionIndexer.Add(method,analysisData);
         }
     }
 }

@@ -14,12 +14,14 @@ namespace callcluster_dotnet
         private ICallCollector CallCollector;
         private IMethodCollector MethodCollector;
         private IClassCollector ClassCollector;
+        private ICSharpMethodAnalyzer MethodAnalyzer;
 
-        public CSharpCallgraphWalker(ICallCollector callCollector, IMethodCollector methodCollector, IClassCollector classCollector):base(SyntaxWalkerDepth.Node)
+        public CSharpCallgraphWalker(ICallCollector callCollector, IMethodCollector methodCollector, IClassCollector classCollector, ICSharpMethodAnalyzer methodAnalyzer):base(SyntaxWalkerDepth.Node)
         {
             this.CallCollector = callCollector;
             this.MethodCollector = methodCollector;
             this.ClassCollector = classCollector;
+            this.MethodAnalyzer = methodAnalyzer;
         }
 
         internal void Visit(SemanticModel model)
@@ -38,7 +40,7 @@ namespace callcluster_dotnet
         private void VisitBaseMethodDeclarationSyntax(BaseMethodDeclarationSyntax node)
         {
             this.CurrentMethod = CurrentModel.GetDeclaredSymbol(node);
-            this.MethodCollector.AddMethod(this.CurrentMethod);
+            this.MethodCollector.AddMethod(this.CurrentMethod, this.MethodAnalyzer.AnalyzeMethod(node));
         }
 
         public override void VisitLocalFunctionStatement(LocalFunctionStatementSyntax node)
@@ -48,7 +50,7 @@ namespace callcluster_dotnet
             var visitor = new InvocationExpressionSymbolVisitor();
             symbol.Accept(visitor);
             this.CurrentMethod = visitor.MethodSymbol;
-            this.MethodCollector.AddMethod(this.CurrentMethod);
+            this.MethodCollector.AddMethod(this.CurrentMethod, this.MethodAnalyzer.AnalyzeMethod(node));
             base.VisitLocalFunctionStatement(node);
             this.CurrentMethod = previousMethod;
         }
@@ -117,52 +119,6 @@ namespace callcluster_dotnet
             this.MethodCollector.AddMethod(visitor.MethodSymbol);
             this.CallCollector.AddCall(this.CurrentMethod,visitor.MethodSymbol,visitor.MethodSymbol.ContainingType);
             base.VisitObjectCreationExpression(node);
-        }
-    }
-
-    internal class InvocationExpressionVisitor : CSharpSyntaxVisitor
-    {
-        private SyntaxNode VisitedNode;
-        private MemberAccessExpressionSyntax MemberAccessNode;
-        private IdentifierNameSyntax IndentifierNameNode;
-
-        override public void DefaultVisit(SyntaxNode node){
-            this.VisitedNode = node;
-        }
-
-        override public void VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
-        {
-            MemberAccessNode=node;
-        }
-
-        override public void VisitIdentifierName(IdentifierNameSyntax node){
-            IndentifierNameNode =node;
-        }
-
-        internal ITypeSymbol GetCalledType(SemanticModel model)
-        {
-            if(MemberAccessNode != null){
-                return model.GetTypeInfo(MemberAccessNode.Expression).Type;
-            } else if (IndentifierNameNode != null){
-                return model.GetSymbolInfo(IndentifierNameNode).Symbol.ContainingType;
-            }else{
-                return null;
-            }
-        }
-
-        internal IMethodSymbol GetCalledMethod(SemanticModel model)
-        {
-            ExpressionSyntax nonNullNode;
-            if(MemberAccessNode != null){
-                nonNullNode=MemberAccessNode;
-            } else if (IndentifierNameNode != null){
-                nonNullNode=IndentifierNameNode;
-            }else{
-                return null;
-            }
-            InvocationExpressionSymbolVisitor visitor = new InvocationExpressionSymbolVisitor();
-            model.GetSymbolInfo(nonNullNode).Symbol.Accept(visitor);
-            return visitor.MethodSymbol;
         }
     }
 

@@ -10,11 +10,13 @@ namespace callcluster_dotnet
     {
         private Dictionary<ISymbol, long?> IndexesDict;
         private int LastIndex;
+        private Dictionary<ISymbol, MethodAnalysisData> CollectedAnalysisData;
 
         public SymbolIndexer()
         {
             this.IndexesDict = new Dictionary<ISymbol,long?>();
             this.LastIndex = 0;
+            this.CollectedAnalysisData = new Dictionary<ISymbol,MethodAnalysisData>();
         }
 
         internal void Add(ISymbol calledSymbol)
@@ -45,10 +47,26 @@ namespace callcluster_dotnet
                     return "file: "+span.Path+" line: "+ span.StartLinePosition.Line;
                 }
             }
-            return IndexesDict.Keys.OrderBy(s=>IndexesDict[s]).Select(s => new FunctionDTO(){
-                location = LocationAsString(s.OriginalDefinition.Locations.FirstOrDefault()),
-                name = s.ToDisplayString()
+            return IndexesDict.Keys.OrderBy(s=>IndexesDict[s]).Select(s => {
+                var dto = new FunctionDTO(){
+                    location = LocationAsString(s.OriginalDefinition.Locations.FirstOrDefault()),
+                    name = s.ToDisplayString(),
+                };
+                if(CollectedAnalysisData.ContainsKey(s))
+                {
+                    var data = CollectedAnalysisData[s];
+                    dto.cyclomaticComplexity = data.CyclomaticComplexity;
+                    dto.numberOfLines = data.NumberOfLines;
+                    dto.numberOfStatements = data.NumberOfStatements;
+                }
+                return dto;
             });
+        }
+
+        internal void Add(ISymbol method, MethodAnalysisData analysisData)
+        {
+            this.CollectedAnalysisData[method] = analysisData;
+            Add(method);
         }
     }
 }

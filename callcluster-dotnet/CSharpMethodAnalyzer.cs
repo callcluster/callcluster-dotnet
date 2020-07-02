@@ -12,6 +12,11 @@ namespace callcluster_dotnet
     {
         public MethodAnalysisData AnalyzeMethod(BaseMethodDeclarationSyntax syntax)
         {
+            return AnalyzeSyntaxMethod(syntax);
+        }
+
+        private MethodAnalysisData AnalyzeSyntaxMethod(CSharpSyntaxNode syntax)
+        {
 
             var statementCounter = new StatementCounterWalker();
             syntax.Accept(statementCounter);
@@ -23,8 +28,13 @@ namespace callcluster_dotnet
             return new MethodAnalysisData(){
                 NumberOfLines = syntax.ToString().Split('\n').Count(),
                 NumberOfStatements = statementCounter.NumberOfStatements,
-                CiclomaticComplexity = cyclomaticComplexityCalculator.Complexity,
+                CyclomaticComplexity = cyclomaticComplexityCalculator.Complexity,
             };
+        }
+
+        public MethodAnalysisData AnalyzeMethod(LocalFunctionStatementSyntax syntax)
+        {
+            return AnalyzeSyntaxMethod(syntax);
         }
 
         private class StatementCounterWalker : CSharpSyntaxWalker
