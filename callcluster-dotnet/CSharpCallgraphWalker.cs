@@ -40,7 +40,7 @@ namespace callcluster_dotnet
         private void VisitBaseMethodDeclarationSyntax(BaseMethodDeclarationSyntax node)
         {
             this.CurrentMethod = CurrentModel.GetDeclaredSymbol(node);
-            this.MethodCollector.AddMethod(this.CurrentMethod, this.MethodAnalyzer.AnalyzeMethod(node));
+            this.MethodCollector.AddMethod(this.CurrentMethod, this.MethodAnalyzer.AnalyzeMethod(node, this.CurrentModel));
         }
 
         public override void VisitLocalFunctionStatement(LocalFunctionStatementSyntax node)
@@ -50,7 +50,7 @@ namespace callcluster_dotnet
             var visitor = new InvocationExpressionSymbolVisitor();
             symbol.Accept(visitor);
             this.CurrentMethod = visitor.MethodSymbol;
-            this.MethodCollector.AddMethod(this.CurrentMethod, this.MethodAnalyzer.AnalyzeMethod(node));
+            this.MethodCollector.AddMethod(this.CurrentMethod, this.MethodAnalyzer.AnalyzeMethod(node, this.CurrentModel));
             base.VisitLocalFunctionStatement(node);
             this.CurrentMethod = previousMethod;
         }
