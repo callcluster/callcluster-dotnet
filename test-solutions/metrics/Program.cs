@@ -49,6 +49,18 @@ namespace metrics
             return b;
         }
 
+        static int IfOnly()
+        {
+            if(3==0)
+            {
+                return 1;
+            }
+            else
+            {
+                return 3;
+            }
+        }
+
         static int OneLiner()
         {
             int b = 0; return b;

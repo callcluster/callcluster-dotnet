@@ -30,6 +30,18 @@ namespace callcluster_dotnet.Tests
                 return i;
             }
         }
+
+        public static FunctionDTO Named(CallgraphDTO callgraph, string name){
+            var f = callgraph.functions.ToList().FirstOrDefault(x=>x.name==name);
+            if(f==null)
+            {
+                throw new System.Exception($"{name} not present in functions.");
+            }
+            else
+            {
+                return f;
+            }
+        }
     }
 
     internal class CallComparer : IEqualityComparer<CallDTO>
