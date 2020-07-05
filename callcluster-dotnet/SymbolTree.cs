@@ -9,10 +9,16 @@ namespace callcluster_dotnet
     internal class Tree<T>
     {
         private IDictionary<T,ICollection<T>> ParentToChildren;
+        private ICollection<T> Roots;
+        private ICollection<T> NonRoots;
         public Tree()
         {
             this.ParentToChildren = new Dictionary<T,ICollection<T>>();
+            this.Roots = new HashSet<T>();
+            this.NonRoots = new HashSet<T>();
         }
+
+
         internal void Add(T parent, T child)
         {
             ICollection<T> children;
@@ -22,7 +28,29 @@ namespace callcluster_dotnet
                 this.ParentToChildren[parent] = children;
             }
             children.Add(child);
+
+            if(Roots.Contains(child))
+            {
+                Roots.Remove(child);
+                NonRoots.Add(child);
+            }
+
+            if(!NonRoots.Contains(parent))
+            {
+                Roots.Add(parent);
+            }
         }
+
+        internal ICollection<T> GetRoots()
+        {
+            return Roots;
+        }
+
+        internal ICollection<T> ChildrenOf(T x)
+        {
+            return ParentToChildren[x];
+        }
+
         /// <summary>
         /// Descendants of a symbol. It doesn't check if the tree really is a tree.
         /// </summary>

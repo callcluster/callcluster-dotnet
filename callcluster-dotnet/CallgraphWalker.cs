@@ -27,6 +27,7 @@ namespace callcluster_dotnet
 
         internal void Visit(Solution solution)
         {
+            Collector.SetCurrent(solution);
             foreach(ProjectId id in solution.GetProjectDependencyGraph().GetTopologicallySortedProjects().ToList()){
                 Visit(solution.GetProject(id));
             }
@@ -34,7 +35,7 @@ namespace callcluster_dotnet
 
         internal void Visit(Project project)
         {
-
+            Collector.SetCurrent(project);
             foreach(var document in project.Documents){
                 var modelTask = document.GetSemanticModelAsync(CancellationToken);
                 modelTask.Wait();

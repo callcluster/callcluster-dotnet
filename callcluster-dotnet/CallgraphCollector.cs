@@ -21,6 +21,14 @@ namespace callcluster_dotnet
         /// A tree of inherited classes.
         /// </summary>
         private Tree<ITypeSymbol> ClassTree;
+        private MethodLocator MethodLocator;
+        private Solution CurrentSolution;
+        private Project CurrentProject;
+
+        internal void SetCurrent(Solution solution)
+        {
+            this.CurrentSolution = solution;
+        }
 
         public CallgraphCollector()
         {
@@ -28,6 +36,12 @@ namespace callcluster_dotnet
             this.Calls = new List<(IMethodSymbol from, IMethodSymbol to, ITypeSymbol type)>();
             this.MethodTree = new Tree<IMethodSymbol>();
             this.ClassTree = new Tree<ITypeSymbol>();
+            this.MethodLocator = new MethodLocator();
+        }
+
+        internal void SetCurrent(Project project)
+        {
+            this.CurrentProject = project;
         }
 
         public void AddMethod(ISymbol called)
@@ -51,7 +65,7 @@ namespace callcluster_dotnet
                 },
                 functions = FunctionIndexer.GetFunctionDTOs(),
                 calls = GetCallDTOs(),
-                community = new CommunityDTO()
+                community = this.MethodLocator.GetCommunityDTO(FunctionIndexer)
             };
         }
 
@@ -110,24 +124,26 @@ namespace callcluster_dotnet
             }
         }
 
-
-        public void AddMethod(IMethodSymbol method)
+        private void AddOverrides(IMethodSymbol method)
         {
             if(method.OverriddenMethod != null)
             {
                 FunctionIndexer.Add(method.OverriddenMethod);
                 MethodTree.Add(method.OverriddenMethod, method);
             }
+        }
+
+        public void AddMethod(IMethodSymbol method)
+        {
+            AddOverrides(method);
+            MethodLocator.Add(method);
             FunctionIndexer.Add(method);
         }
 
         public void AddMethod(IMethodSymbol method, MethodAnalysisData analysisData)
         {
-            if(method.OverriddenMethod != null)
-            {
-                FunctionIndexer.Add(method.OverriddenMethod);
-                MethodTree.Add(method.OverriddenMethod, method);
-            }
+            AddOverrides(method);
+            MethodLocator.Add(method);
             FunctionIndexer.Add(method,analysisData);
         }
     }
