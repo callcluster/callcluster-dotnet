@@ -52,6 +52,8 @@ namespace callcluster_dotnet
         public void AddCall(IMethodSymbol caller, IMethodSymbol called, ITypeSymbol calledType)
         {
             this.Calls.Add((from:caller,to:called,type:calledType));
+            FunctionIndexer.Add(called);
+            FunctionIndexer.Add(caller);
         }
 
         internal CallgraphDTO GetCallgraphDTO()
@@ -137,11 +139,17 @@ namespace callcluster_dotnet
             FunctionIndexer.Add(method);
         }
 
-        public void AddMethod(IMethodSymbol method, MethodAnalysisData analysisData)
+        public void AddMethod(IMethodSymbol method, MethodAnalysisData analysisData, IOperation operation)
         {
             AddOverrides(method);
             MethodLocator.Add(method);
             FunctionIndexer.Add(method,analysisData);
+            if(!method.IsAbstract)
+            {
+                var walker = new MethodWalker(this, method);
+                operation.Accept(walker);
+            }
+            
         }
     }
 }

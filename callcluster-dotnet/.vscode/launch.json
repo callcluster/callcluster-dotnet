@@ -11,7 +11,8 @@
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
             "program": "${workspaceFolder}/bin/Debug/netcoreapp3.1/callcluster-dotnet.dll",
-            "args": ["../test-solutions/multiple/multiple.sln"],
+            //"args": ["../test-solutions/multiple/multiple.sln"],
+            "args": ["../test-solutions/interfaces/interfaces.csproj"],
             //"args": ["../big-tests/bc-csharp-master/BouncyCastle.sln"],
             "cwd": "${workspaceFolder}",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console

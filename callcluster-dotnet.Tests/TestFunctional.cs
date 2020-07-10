@@ -24,18 +24,6 @@ namespace callcluster_dotnet.Tests
             CallgraphAssert.CallPresent(dto,mapNumbers,newThing);
         }
 
-        [Fact]
-        public async void CallsFromLocalPrivateFunctionDetected()
-        {
-            CallgraphDTO dto = await Utils.Extract("functional/functional.csproj");
-            string func = "AsNumberPrivate(int)";
-            string transform = "functional.Thing.Transform(int, int)";
-            string newThing = "functional.Thing.Thing()";
-            CallgraphAssert.CallPresent(dto,func,transform);
-            CallgraphAssert.CallPresent(dto,func,newThing);
-            CallgraphAssert.CallsFrom(dto,func,2);
-        }
-
 
     }
 }
