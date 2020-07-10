@@ -11,11 +11,15 @@ namespace callcluster_dotnet
         private IDictionary<T,ICollection<T>> ParentToChildren;
         private ICollection<T> Roots;
         private ICollection<T> NonRoots;
-        public Tree()
+
+        private IEqualityComparer<T> Comparer;
+
+        public Tree(IEqualityComparer<T> comparer = null)
         {
-            this.ParentToChildren = new Dictionary<T,ICollection<T>>();
-            this.Roots = new HashSet<T>();
-            this.NonRoots = new HashSet<T>();
+            this.ParentToChildren = new Dictionary<T,ICollection<T>>(comparer);
+            this.Roots = new HashSet<T>(comparer);
+            this.NonRoots = new HashSet<T>(comparer);
+            this.Comparer = comparer;
         }
 
 
@@ -24,7 +28,7 @@ namespace callcluster_dotnet
             ICollection<T> children;
             this.ParentToChildren.TryGetValue(parent,out children);
             if(children==null){
-                children = new HashSet<T>();
+                children = new HashSet<T>(this.Comparer);
                 this.ParentToChildren[parent] = children;
             }
             children.Add(child);

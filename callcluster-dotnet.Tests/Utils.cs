@@ -42,6 +42,15 @@ namespace callcluster_dotnet.Tests
                 return f;
             }
         }
+
+    }
+
+    public static class CallgraphExtensions
+    {
+        public static CommunityDTO Child(this CommunityDTO com,string name)
+        {
+            return com.communities.FirstOrDefault(c=> c.name == name );
+        }
     }
 
     internal class CallComparer : IEqualityComparer<CallDTO>
