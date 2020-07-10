@@ -2,8 +2,7 @@ namespace hello.all.good
 {
     public class Hi
     {
-        public static int Some()
-        {
+        public int Exist(){
             return 1;
         }
     }
