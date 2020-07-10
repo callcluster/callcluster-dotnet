@@ -37,6 +37,7 @@ namespace callcluster_dotnet
         {
             Collector.SetCurrent(project);
             foreach(var document in project.Documents){
+                Console.WriteLine(document.Name);
                 var modelTask = document.GetSemanticModelAsync(CancellationToken);
                 modelTask.Wait();
                 this.CurrentModel = modelTask.Result;

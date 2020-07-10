@@ -36,6 +36,7 @@ namespace callcluster_dotnet
                 {
                     if (workspaceFailedArgs.Diagnostic.Kind == WorkspaceDiagnosticKind.Failure)
                     {
+                        Console.WriteLine("Error when opening a file");
                         Console.WriteLine(workspaceFailedArgs.Diagnostic.Message);
                     }
                 };

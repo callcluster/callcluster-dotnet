@@ -28,6 +28,7 @@ namespace callcluster_dotnet
         {
             this.CurrentModel = model;
             Visit(this.CurrentModel.SyntaxTree.GetRoot());
+            
         }
 
         public override void VisitClassDeclaration(ClassDeclarationSyntax node)

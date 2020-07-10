@@ -51,9 +51,6 @@ namespace callcluster_dotnet
 
         public void AddCall(IMethodSymbol caller, IMethodSymbol called, ITypeSymbol calledType)
         {
-            long? callerIndex = FunctionIndexer.IndexOf(caller);
-            long? calledIndex = FunctionIndexer.IndexOf(called);
-
             this.Calls.Add((from:caller,to:called,type:calledType));
         }
 
