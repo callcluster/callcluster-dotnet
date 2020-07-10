@@ -114,11 +114,14 @@ namespace callcluster_dotnet
             }
             foreach(var @interface in symbol.Interfaces){
                 ClassTree.Add(@interface, symbol);
-                foreach(var abstractMethod in @interface.GetMembers()){
+                foreach(var abstractMethod in @interface.GetMembers().Where(m=>m is IMethodSymbol)){
                     var implementation = symbol.FindImplementationForInterfaceMember(abstractMethod);
                     this.AddMethod(abstractMethod as IMethodSymbol);
-                    this.AddMethod(implementation as IMethodSymbol);
-                    this.MethodTree.Add(abstractMethod as IMethodSymbol, implementation as IMethodSymbol);
+                    if(implementation!=null)
+                    {
+                        this.AddMethod(implementation as IMethodSymbol);
+                        this.MethodTree.Add(abstractMethod as IMethodSymbol, implementation as IMethodSymbol);
+                    }
                 }
             }
         }
