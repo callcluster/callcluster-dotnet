@@ -39,7 +39,14 @@ namespace callcluster_dotnet
         private void VisitBaseMethodDeclarationSyntax(BaseMethodDeclarationSyntax node)
         {
             this.CurrentMethod = CurrentModel.GetDeclaredSymbol(node);
-            this.MethodCollector.AddMethod(this.CurrentMethod, this.MethodAnalyzer.AnalyzeMethod(node, this.CurrentModel),this.CurrentModel.GetOperation(node));
+            if(this.CurrentMethod.IsExtern)
+            {
+                this.MethodCollector.AddMethod(this.CurrentMethod);
+            }
+            else
+            {
+                this.MethodCollector.AddMethod(this.CurrentMethod, this.MethodAnalyzer.AnalyzeMethod(node, this.CurrentModel),this.CurrentModel.GetOperation(node));
+            }
         }
 
         public override void VisitMethodDeclaration(MethodDeclarationSyntax node)

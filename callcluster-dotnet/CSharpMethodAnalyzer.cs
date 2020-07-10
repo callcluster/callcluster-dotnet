@@ -17,6 +17,14 @@ namespace callcluster_dotnet
             if(model.GetDeclaredSymbol(syntax).IsAbstract){
                 return new MethodAnalysisData();
             }
+
+            if(syntax.Body == null && syntax.ExpressionBody!=null){
+                return new MethodAnalysisData(){
+                    CyclomaticComplexity = 1,
+                    NumberOfLines = 1,
+                    NumberOfStatements = 1
+                };
+            }
             
             var analysis = AnalyzeSyntaxMethod(syntax.Body, model);
             var op = model.GetOperation(syntax);
