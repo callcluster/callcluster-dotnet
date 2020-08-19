@@ -32,3 +32,9 @@ A C# callgraph extractor for callcluster.
     "communities":A list of community objects
 }
 ```
+
+# Publishing
+```
+dotnet tarball -c release -r <RID>
+```
+Other platforms: https://github.com/qmfrederik/dotnet-packaging
