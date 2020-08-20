@@ -11,5 +11,6 @@ namespace callcluster_dotnet
         public int? CyclomaticComplexity { get; internal set; }
         public int? NumberOfLines { get; internal set; }
         public int? NumberOfStatements { get; internal set; }
+        public int? BasiliComplexity {get; internal set;}
     }
 }

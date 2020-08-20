@@ -33,6 +33,7 @@ namespace callcluster_dotnet
 
             analysis.CyclomaticComplexity = getCyclomaticComplexity(visitor.Graph);
 
+
             return analysis;
         }
 
@@ -41,9 +42,12 @@ namespace callcluster_dotnet
 
             var statementCounter = new StatementCounterWalker();
             syntax.Accept(statementCounter);
+            var basiliWalker = new BasiliWalker();
+            syntax.Accept(basiliWalker);
             return new MethodAnalysisData(){
                 NumberOfLines = syntax.ToString().Split('\n').Count(),
                 NumberOfStatements = statementCounter.NumberOfStatements,
+                BasiliComplexity = basiliWalker.Complexity
             };
         }
 
@@ -119,6 +123,62 @@ namespace callcluster_dotnet
             }
 
             public ControlFlowGraph Graph { get; private set; }
+        }
+
+        private class BasiliWalker : CSharpSyntaxWalker
+        {
+            public int Complexity { get; internal set; } = 1;
+            
+            override public void VisitIfStatement(IfStatementSyntax node){
+                Complexity++;
+                base.VisitIfStatement(node);
+            }
+
+            override public void VisitWhileStatement(WhileStatementSyntax node){
+                Complexity++;
+                base.VisitWhileStatement(node);
+            }
+
+            override public void VisitForStatement(ForStatementSyntax node){
+                Complexity++;
+                base.VisitForStatement(node);
+            }
+
+            override public void VisitForEachStatement(ForEachStatementSyntax node){
+                Complexity++;
+                base.VisitForEachStatement(node);
+            }
+
+            override public void VisitForEachVariableStatement(ForEachVariableStatementSyntax node){
+                Complexity++;
+                base.VisitForEachVariableStatement(node);
+            }
+
+            override public void VisitDoStatement(DoStatementSyntax node){
+                Complexity++;
+                base.VisitDoStatement(node);
+            }
+
+            override public void VisitCasePatternSwitchLabel (CasePatternSwitchLabelSyntax node){
+                Complexity++;
+                base.VisitCasePatternSwitchLabel(node);
+            }
+
+            override public void VisitCaseSwitchLabel(CaseSwitchLabelSyntax node){
+                Complexity++;
+                base.VisitCaseSwitchLabel(node);
+            }
+
+            override public void VisitBinaryExpression(BinaryExpressionSyntax node){
+                switch(node.OperatorToken.Kind()){
+                    case SyntaxKind.LogicalAndExpression: Complexity++;
+                    break;
+                    case SyntaxKind.LogicalOrExpression: Complexity++;
+                    break;
+                }
+                base.VisitBinaryExpression(node);
+            }
+
         }
     }
 }

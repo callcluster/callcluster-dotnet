@@ -9,6 +9,30 @@ namespace metrics
             
         }
 
+        static int DoNormalComplexThingsWithConditions()
+        {
+            if(true && true)
+            {
+                return 10;
+            }
+            else
+            {
+                int b = 0;
+                if(false || b==0)
+                {
+                    int q = 1;
+                    q += 1;
+                    b = q;
+                }
+                for(int i=0;i<10;i++)
+                {
+                    b+=i;
+                }
+
+                return b;
+            }
+        }
+
         static int DoNormalComplexThings()
         {
             if(true)

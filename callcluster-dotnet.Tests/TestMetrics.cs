@@ -50,6 +50,7 @@ namespace callcluster_dotnet.Tests
             M= E - N + 2P = 1
             */
             Assert.Equal(2,ifonly.cyclomaticComplexity);
+            Assert.Equal(2,ifonly.basiliComplexity);
 
             var oneLess = Utils.Named(dto,"metrics.Program.DoNormalComplexThingsWithOneLessBranch()");
             /*
@@ -71,11 +72,20 @@ namespace callcluster_dotnet.Tests
             M = E - N + 2 = 3
             */
             Assert.Equal(3,oneLess.cyclomaticComplexity);
+            Assert.Equal(3,oneLess.basiliComplexity);
             var normal = Utils.Named(dto,"metrics.Program.DoNormalComplexThings()");
             /*
             adds 3 edges and 2 vertices, so +1 branches
             */
             Assert.Equal(4,normal.cyclomaticComplexity);
+            Assert.Equal(4,normal.basiliComplexity);
+
+            var normalWithConditions = Utils.Named(dto,"metrics.Program.DoNormalComplexThingsWithConditions()");
+            /*
+            adds 3 edges and 2 vertices, so +1 branches
+            */
+            Assert.Equal(6,normalWithConditions.cyclomaticComplexity);
+            Assert.Equal(6,normalWithConditions.basiliComplexity);
         }
     }
 }

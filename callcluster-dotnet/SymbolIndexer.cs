@@ -58,6 +58,8 @@ namespace callcluster_dotnet
                     dto.cyclomaticComplexity = data.CyclomaticComplexity;
                     dto.numberOfLines = data.NumberOfLines;
                     dto.numberOfStatements = data.NumberOfStatements;
+                    dto.basiliComplexity = data.BasiliComplexity
+                    ;
                 }
                 return dto;
             });
