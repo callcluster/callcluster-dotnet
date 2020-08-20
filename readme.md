@@ -35,6 +35,14 @@ A C# callgraph extractor for callcluster.
 
 # Publishing
 ```
-dotnet tarball -c release -r <RID>
+dotnet tarball -r linux-x64
 ```
 Other platforms: https://github.com/qmfrederik/dotnet-packaging
+
+´´´
+dotnet tarball -r linux-x64
+´´´
+
+´´´
+dotnet zip -r win7-x64
+´´´
