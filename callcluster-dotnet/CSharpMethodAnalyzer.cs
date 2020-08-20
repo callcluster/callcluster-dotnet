@@ -171,9 +171,9 @@ namespace callcluster_dotnet
 
             override public void VisitBinaryExpression(BinaryExpressionSyntax node){
                 switch(node.OperatorToken.Kind()){
-                    case SyntaxKind.LogicalAndExpression: Complexity++;
+                    case SyntaxKind.AmpersandAmpersandToken: Complexity++;
                     break;
-                    case SyntaxKind.LogicalOrExpression: Complexity++;
+                    case SyntaxKind.BarBarToken: Complexity++;
                     break;
                 }
                 base.VisitBinaryExpression(node);
