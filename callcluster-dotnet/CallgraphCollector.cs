@@ -59,9 +59,6 @@ namespace callcluster_dotnet
         internal CallgraphDTO GetCallgraphDTO()
         {
             return new CallgraphDTO(){
-                metadata= new MetadataDTO(){
-                    language="C#"
-                },
                 functions = FunctionIndexer.GetFunctionDTOs(),
                 calls = GetCallDTOs(),
                 community = this.MethodLocator.GetCommunityDTO(FunctionIndexer)
