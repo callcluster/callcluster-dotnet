@@ -22,7 +22,7 @@ namespace callcluster_dotnet
 
         public override void VisitInvocation(IInvocationOperation operation)
         {
-            Collector.AddCall(Caller,operation.TargetMethod,operation.Instance?.Type ?? operation.TargetMethod.ContainingType);
+            Collector.AddCall(Caller,operation.TargetMethod.OriginalDefinition,operation.Instance?.Type.OriginalDefinition ?? operation.TargetMethod.ContainingType.OriginalDefinition);
             base.VisitInvocation(operation);
         }
 
