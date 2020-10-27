@@ -13,9 +13,9 @@ namespace callcluster_dotnet.Tests
         public async void MainConstructorCallsMethods()
         {
             CallgraphDTO dto = await Utils.Extract("constructors/constructors.csproj");
-            string main = "constructors.Main.Main()";
-            string doThis="constructors.Main.DoThis()";
-            string doThat="constructors.Main.DoThat()";
+            string main = "Main()";
+            string doThis="DoThis()";
+            string doThat="DoThat()";
             CallgraphAssert.CallPresent(dto,main,doThis);
             CallgraphAssert.CallPresent(dto,main,doThat);
             CallgraphAssert.CallsFrom(dto,main,2);
@@ -25,10 +25,10 @@ namespace callcluster_dotnet.Tests
         public async void DoThatCallsThreeConstructors()
         {
             CallgraphDTO dto = await Utils.Extract("constructors/constructors.csproj");
-            string main = "constructors.Main.Main()";
-            string mainString = "constructors.Main.Main(string, string)";
-            string mainInt ="constructors.Main.Main(int, int)";
-            string doThat="constructors.Main.DoThat()";
+            string main = "Main()";
+            string mainString = "Main(String, String)";
+            string mainInt ="Main(Int32, Int32)";
+            string doThat="DoThat()";
             CallgraphAssert.CallPresent(dto,doThat,main);
             CallgraphAssert.CallPresent(dto,doThat,mainString);
             CallgraphAssert.CallPresent(dto,doThat,mainInt);
@@ -39,9 +39,9 @@ namespace callcluster_dotnet.Tests
         public async void GrandsonConstructorCallsParent()
         {
             CallgraphDTO dto = await Utils.Extract("constructors/constructors.csproj");
-            string grandson = "constructors.Grandson.Grandson()";
-            string child = "constructors.Child.Child(int)";
-            string mainString = "constructors.Main.Main(string, string)";
+            string grandson = "Grandson()";
+            string child = "Child(Int32)";
+            string mainString = "Main(String, String)";
             CallgraphAssert.CallPresent(dto,grandson,child);
             CallgraphAssert.CallPresent(dto,grandson,mainString);
             CallgraphAssert.CallsFrom(dto,grandson,2);

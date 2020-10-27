@@ -22,14 +22,14 @@ namespace callcluster_dotnet.Tests
         {
             CallgraphDTO dto = await Utils.Extract("multiple/multiple.sln");
             var subClass = dto.community
-            ?.Child("consotest")
-            ?.Child("consotest.dll")
-            ?.Child("")
-            ?.Child("introspection")
-            ?.Child("Outside")
-            ?.Child("Inside")
-            ?.Child("Within")
-            ?.Child("DepperWithin");
+            ?.Community("consotest")
+            ?.Community("consotest.dll")
+            ?.Community("")
+            ?.Community("introspection")
+            ?.Community("Outside")
+            ?.Community("Inside")
+            ?.Community("Within")
+            ?.Community("DepperWithin");
             Assert.NotNull(subClass);
             Assert.Equal(1,subClass.functions.Count());
         }
@@ -39,23 +39,23 @@ namespace callcluster_dotnet.Tests
         {
             CallgraphDTO dto = await Utils.Extract("multiple/multiple.sln");
             var libra = dto.community
-            ?.Child("libratest")
-            ?.Child("libratest.dll")
-            ?.Child("")
-            ?.Child("hello")
-            ?.Child("all")
-            ?.Child("good")
-            ?.Child("Hi");
+            ?.Community("libratest")
+            ?.Community("libratest.dll")
+            ?.Community("")
+            ?.Community("hello")
+            ?.Community("all")
+            ?.Community("good")
+            ?.Community("Hi");
             Assert.NotNull(libra);
 
             var servelibra = dto.community
-            ?.Child("servelibratest")
-            ?.Child("servelibratest.dll")
-            ?.Child("")
-            ?.Child("hello")
-            ?.Child("all")
-            ?.Child("good")
-            ?.Child("Hi");
+            ?.Community("servelibratest")
+            ?.Community("servelibratest.dll")
+            ?.Community("")
+            ?.Community("hello")
+            ?.Community("all")
+            ?.Community("good")
+            ?.Community("Hi");
             Assert.NotNull(servelibra);
             
         }
@@ -65,25 +65,25 @@ namespace callcluster_dotnet.Tests
         {
             CallgraphDTO dto = await Utils.Extract("multiple/multiple.sln");
             var helloNs = dto.community
-            ?.Child("servelibratest")
-            ?.Child("servelibratest.dll")
-            ?.Child("")
-            ?.Child("hello");
+            ?.Community("servelibratest")
+            ?.Community("servelibratest.dll")
+            ?.Community("")
+            ?.Community("hello");
             Assert.NotNull(helloNs);
-            Assert.NotNull(helloNs.Child("Addressing"));
-            Assert.NotEmpty(helloNs.Child("Addressing").functions);
+            Assert.NotNull(helloNs.Community("Addressing"));
+            Assert.NotEmpty(helloNs.Community("Addressing").functions);
 
             var goodbye = helloNs
-            ?.Child("all")
-            ?.Child("Sad")
-            ?.Child("Goodbye");
+            ?.Community("all")
+            ?.Community("Sad")
+            ?.Community("Goodbye");
             Assert.NotNull(goodbye);
             Assert.NotEmpty(goodbye.functions);
 
             var hi = helloNs
-            ?.Child("all")
-            ?.Child("good")
-            ?.Child("Hi");
+            ?.Community("all")
+            ?.Community("good")
+            ?.Community("Hi");
             Assert.NotNull(hi);
             Assert.NotEmpty(hi.functions);
             

@@ -13,22 +13,40 @@ namespace callcluster_dotnet.Tests
         public async void TurnOnTurnableCallsAllImplementations()
         {
             CallgraphDTO dto = await Utils.Extract("interfaces/interfaces.csproj");
-            string turnOnProgram = "interfaces.Program.TurnOnTurnable(interfaces.ITurnable)";
-            string turnOnTurnable ="interfaces.ITurnable.TurnOn()";
-            string turnOnMicrowave ="interfaces.Microwave.TurnOn()";
-            string turnOnTelevision ="interfaces.Television.TurnOn()";
-            CallgraphAssert.CallPresent(dto,turnOnProgram,turnOnTurnable);
-            CallgraphAssert.CallPresent(dto,turnOnProgram,turnOnMicrowave);
-            CallgraphAssert.CallPresent(dto,turnOnProgram,turnOnTelevision);
-            CallgraphAssert.CallsFrom(dto,turnOnProgram,3);
+            CommunityDTO project = dto.community.Namespace("interfaces");
+
+            long? turnOnProgram = project
+            ?.Community("Program")
+            ?.Function("TurnOnTurnable(ITurnable)", dto);
+            
+            long? turnOnTurnable = project
+            ?.Community("ITurnable")
+            ?.Function("TurnOn()", dto);
+            
+            long? turnOnMicrowave = project
+            ?.Community("Microwave")
+            ?.Function("TurnOn()", dto);
+
+            long? turnOnTelevision = project
+            ?.Community("Television")
+            ?.Function("TurnOn()", dto);
+            
+            CallgraphAssert.CallPresent(dto,turnOnProgram.Value,turnOnTurnable.Value);
+            CallgraphAssert.CallPresent(dto,turnOnProgram.Value,turnOnMicrowave.Value);
+            CallgraphAssert.CallPresent(dto,turnOnProgram.Value,turnOnTelevision.Value);
+            CallgraphAssert.CallsFrom(dto,turnOnProgram.Value,3);
         }
 
         [Fact]
         public async void BreakBreakableCallsAllImplementations()
         {
             CallgraphDTO dto = await Utils.Extract("interfaces/interfaces.csproj");
-            string breakProgram = "interfaces.Program.BreakThings(interfaces.IBreakable)";
-            CallgraphAssert.CallsFrom(dto, breakProgram, 6);//interface, tv, microwave, Delicate, Glass, Pottery
+            long? breakProgram = dto.community
+            ?.Namespace("interfaces")
+            ?.Community("Program")
+            ?.Function("BreakThings(IBreakable)", dto);
+
+            CallgraphAssert.CallsFrom(dto, breakProgram.Value, 6);//interface, tv, microwave, Delicate, Glass, Pottery
         }
     }
 }

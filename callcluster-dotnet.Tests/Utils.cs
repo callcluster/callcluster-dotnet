@@ -47,9 +47,33 @@ namespace callcluster_dotnet.Tests
 
     public static class CallgraphExtensions
     {
-        public static CommunityDTO Child(this CommunityDTO com,string name)
+        public static CommunityDTO Community(this CommunityDTO com,string name)
         {
             return com.communities.FirstOrDefault(c=> c.name == name );
+        }
+
+        public static long? Function(this CommunityDTO com, string name, CallgraphDTO cg)
+        {
+            var ret = com.functions
+            .Select((fid)=> (long?) fid)
+            .Select( (long? fid)=>(f:cg.functions.ElementAt((int)fid), fid));
+
+            return ret.FirstOrDefault(x=> x.f.name==name).fid;
+        }
+
+        public static CommunityDTO Namespace(this CommunityDTO com,string name)
+        {
+            if(com.type == "root" 
+                || com.type == "Assembly" 
+                || com.type == "NetModule" 
+            ){
+                return com.communities
+                .Select(c=>c.Namespace(name))
+                .FirstOrDefault(ns=>ns!=null);
+            }else{
+                return com.communities
+                .FirstOrDefault(c=> c.name == name && c.type=="Namespace");
+            }
         }
     }
 

@@ -50,7 +50,12 @@ namespace callcluster_dotnet
             return IndexesDict.Keys.OrderBy(s=>IndexesDict[s]).Select(s => {
                 var dto = new FunctionDTO(){
                     location = LocationAsString(s.OriginalDefinition.Locations.FirstOrDefault()),
-                    name = s.ToDisplayString(),
+                    name = s.ToDisplayString(new SymbolDisplayFormat(
+                        memberOptions:
+                            SymbolDisplayMemberOptions.IncludeParameters,
+                        parameterOptions:SymbolDisplayParameterOptions.IncludeType
+                        
+                    )),
                 };
                 if(CollectedAnalysisData.ContainsKey(s))
                 {
@@ -58,8 +63,7 @@ namespace callcluster_dotnet
                     dto.cyclomaticComplexity = data.CyclomaticComplexity;
                     dto.numberOfLines = data.NumberOfLines;
                     dto.numberOfStatements = data.NumberOfStatements;
-                    dto.basiliComplexity = data.BasiliComplexity
-                    ;
+                    dto.basiliComplexity = data.BasiliComplexity;
                 }
                 return dto;
             });

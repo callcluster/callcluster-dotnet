@@ -15,7 +15,7 @@ namespace callcluster_dotnet.Tests
         public async void SimpleProjectHasWriteLine(string value)
         {
             CallgraphDTO dto = await Utils.Extract(value);
-            Assert.Contains(dto.functions,f => f.name=="System.Console.WriteLine(string)");
+            Assert.Contains(dto.functions,f => f.name=="WriteLine(String)");
         }
 
         [Theory]
