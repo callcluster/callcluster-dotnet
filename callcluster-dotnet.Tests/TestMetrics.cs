@@ -14,9 +14,9 @@ namespace callcluster_dotnet.Tests
         {
             CallgraphDTO dto = await Utils.Extract("metrics/metrics.csproj");
             var oneLiner = Utils.Named(dto,"OneLiner()");
-            Assert.Equal(3,oneLiner.numberOfLines);
+            Assert.Equal(3,oneLiner.linesOfCode);
             var twoLiner = Utils.Named(dto,"TwoLiner()");
-            Assert.Equal(4,twoLiner.numberOfLines);
+            Assert.Equal(4,twoLiner.linesOfCode);
         }
 
         [Fact]

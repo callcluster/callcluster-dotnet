@@ -61,7 +61,7 @@ namespace callcluster_dotnet
                 {
                     var data = CollectedAnalysisData[s];
                     dto.cyclomaticComplexity = data.CyclomaticComplexity;
-                    dto.numberOfLines = data.NumberOfLines;
+                    dto.linesOfCode = data.NumberOfLines;
                     dto.numberOfStatements = data.NumberOfStatements;
                     dto.basiliComplexity = data.BasiliComplexity;
                 }
