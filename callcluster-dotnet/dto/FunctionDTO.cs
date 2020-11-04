@@ -10,5 +10,6 @@ namespace callcluster_dotnet.dto
         public int? numberOfStatements { get; internal set; }
         public string location { get; internal set; }
         public string name {get; internal set;}
+        public bool written {get; internal set;}
     }
 }

@@ -18,6 +18,7 @@ A C# callgraph extractor for callcluster.
         {
             "location":a string representing the filename and line of this function in the sources or somehow tracing to the source code,
             "name": name of this function,
+            "written": wether the function's code is written or not (abstract methods or interface methods are not written, but they are extracted)
         }
     ],
     "community":a community object

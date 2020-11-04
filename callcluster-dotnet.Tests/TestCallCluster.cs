@@ -90,7 +90,7 @@ namespace callcluster_dotnet.Tests
             );
 
             var addClassInstances = dto.functions
-            .Where(f=>f.name=="AddClass(INamedTypeSymbol)")
+            .Where(f=>f.name=="AddClass(INamedTypeSymbol)" && f.written)
             .ToList();
             Assert.Equal(1,addClassInstances.Count());
         }

@@ -58,6 +58,7 @@ namespace callcluster_dotnet
                         
                     )),
                 };
+                dto.written = false;
                 if(CollectedAnalysisData.ContainsKey(s))
                 {
                     var data = CollectedAnalysisData[s];
@@ -65,6 +66,7 @@ namespace callcluster_dotnet
                     dto.linesOfCode = data.NumberOfLines;
                     dto.numberOfStatements = data.NumberOfStatements;
                     dto.basiliComplexity = data.BasiliComplexity;
+                    dto.written = CollectedAnalysisData[s].written;
                 }
                 return dto;
             });

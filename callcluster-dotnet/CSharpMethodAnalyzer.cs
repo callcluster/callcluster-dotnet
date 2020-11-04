@@ -22,7 +22,8 @@ namespace callcluster_dotnet
                 return new MethodAnalysisData(){
                     CyclomaticComplexity = 1,
                     NumberOfLines = 1,
-                    NumberOfStatements = 1
+                    NumberOfStatements = 1,
+                    written = true
                 };
             }
             
@@ -47,7 +48,8 @@ namespace callcluster_dotnet
             return new MethodAnalysisData(){
                 NumberOfLines = syntax.ToString().Split('\n').Count(),
                 NumberOfStatements = statementCounter.NumberOfStatements,
-                BasiliComplexity = basiliWalker.Complexity
+                BasiliComplexity = basiliWalker.Complexity,
+                written = true
             };
         }
 
