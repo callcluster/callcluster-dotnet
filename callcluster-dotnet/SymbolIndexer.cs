@@ -14,7 +14,7 @@ namespace callcluster_dotnet
 
         public SymbolIndexer()
         {
-            var comparer = new SymbolComparer();
+            var comparer = SymbolEqualityComparer.Default;
             this.IndexesDict = new Dictionary<ISymbol,long?>(comparer);
             this.LastIndex = 0;
             this.CollectedAnalysisData = new Dictionary<ISymbol,MethodAnalysisData>(comparer);

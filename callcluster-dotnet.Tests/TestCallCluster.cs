@@ -64,10 +64,35 @@ namespace callcluster_dotnet.Tests
             var extracts = dto.functions.Where(f=>f.name=="Extract(String)").ToList();
             Assert.Equal(2,extracts.Count());
 
-            //var fromReal=dto.calls.Where(c=>c.from==realExtract.Value).ToList();
-            //var fromTesting=dto.calls.Where(c=>c.from==testingExtract.Value).ToList();
-
             CallgraphAssert.CallPresent(dto,testingExtract.Value,realExtract.Value);
+        }
+
+        [Fact]
+        public async void CallsToInterfaceAreResolved()
+        {
+            CallgraphDTO dto = await Utils.Extract("../callcluster-dotnet.sln");
+            CommunityDTO project = dto.community
+            .Community("callcluster-dotnet")
+            .Namespace("callcluster_dotnet");
+            
+            long? visitClassDeclaration = project
+            ?.Community("CSharpCallgraphWalker")
+            ?.Function("VisitClassDeclaration(ClassDeclarationSyntax)",dto);
+
+            long? called = project
+            ?.Community("CallgraphCollector")
+            ?.Function("AddClass(INamedTypeSymbol)",dto);
+
+            CallgraphAssert.CallPresent(
+                dto,
+                visitClassDeclaration.Value,
+                called.Value
+            );
+
+            var addClassInstances = dto.functions
+            .Where(f=>f.name=="AddClass(INamedTypeSymbol)")
+            .ToList();
+            Assert.Equal(1,addClassInstances.Count());
         }
     }
 }

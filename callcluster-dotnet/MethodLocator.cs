@@ -13,7 +13,7 @@ namespace callcluster_dotnet
 
         public MethodLocator()
         {
-            this.tree = new Tree<ISymbol>(new SymbolComparer());
+            this.tree = new Tree<ISymbol>(SymbolEqualityComparer.Default);
         }
 
         internal void Add(IMethodSymbol method)
