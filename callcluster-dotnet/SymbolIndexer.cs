@@ -14,9 +14,10 @@ namespace callcluster_dotnet
 
         public SymbolIndexer()
         {
-            this.IndexesDict = new Dictionary<ISymbol,long?>();
+            var comparer = new SymbolComparer();
+            this.IndexesDict = new Dictionary<ISymbol,long?>(comparer);
             this.LastIndex = 0;
-            this.CollectedAnalysisData = new Dictionary<ISymbol,MethodAnalysisData>();
+            this.CollectedAnalysisData = new Dictionary<ISymbol,MethodAnalysisData>(comparer);
         }
 
         internal void Add(ISymbol calledSymbol)

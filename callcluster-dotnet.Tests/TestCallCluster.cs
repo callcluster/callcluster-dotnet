@@ -61,6 +61,9 @@ namespace callcluster_dotnet.Tests
             ?.Community("Utils")
             ?.Function("Extract(String)",dto);
 
+            var extracts = dto.functions.Where(f=>f.name=="Extract(String)").ToList();
+            Assert.Equal(2,extracts.Count());
+
             //var fromReal=dto.calls.Where(c=>c.from==realExtract.Value).ToList();
             //var fromTesting=dto.calls.Where(c=>c.from==testingExtract.Value).ToList();
 

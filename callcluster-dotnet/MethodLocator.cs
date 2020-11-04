@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using callcluster_dotnet.dto;
 using Microsoft.CodeAnalysis;
@@ -8,40 +7,13 @@ using Microsoft.CodeAnalysis.FindSymbols;
 
 namespace callcluster_dotnet
 {
-    internal class MethodLocator
+    internal partial class MethodLocator
     {
         private Tree<ISymbol> tree;
 
-        private class ParentalNameComprarer : IEqualityComparer<ISymbol>
-        {
-            public bool Equals([AllowNull] ISymbol x, [AllowNull] ISymbol y)
-            {
-                return (x==null || y== null) || (
-                    x!=null && y!=null && x.Name==y.Name && x.Kind == y.Kind && (
-                        (x.ContainingSymbol == null && y.ContainingSymbol == null)
-                        ||
-                        (x.ContainingSymbol!=null && y.ContainingSymbol!=null && Equals(x.ContainingSymbol,y.ContainingSymbol))
-                    )
-                );
-            }
-
-            public int GetHashCode([DisallowNull] ISymbol obj)
-            {
-                int myHash = obj.Name.GetHashCode() ^ obj.Kind.GetHashCode();
-                if(obj.ContainingSymbol==null)
-                {
-                    return myHash;
-                }
-                else
-                {
-                    return myHash ^ GetHashCode(obj.ContainingSymbol);
-                }
-            }
-        }
-
         public MethodLocator()
         {
-            this.tree = new Tree<ISymbol>(new ParentalNameComprarer());
+            this.tree = new Tree<ISymbol>(new SymbolComparer());
         }
 
         internal void Add(IMethodSymbol method)
