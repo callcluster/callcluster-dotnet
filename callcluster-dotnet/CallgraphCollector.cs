@@ -67,6 +67,7 @@ namespace callcluster_dotnet
 
         private IEnumerable<CallDTO> GetCallDTOs()
         {
+            Console.WriteLine("Started listing all calls");
             return this.Calls.SelectMany((call)=>{
                 long? from = FunctionIndexer.IndexOf(call.from);
                 long? to = FunctionIndexer.IndexOf(call.to);
@@ -144,7 +145,7 @@ namespace callcluster_dotnet
             AddOverrides(method);
             MethodLocator.Add(method);
             FunctionIndexer.Add(method,analysisData);
-            if(!method.IsAbstract)
+            if(!method.IsAbstract && operation!=null)
             {
                 var walker = new MethodWalker(this, method);
                 operation.Accept(walker);

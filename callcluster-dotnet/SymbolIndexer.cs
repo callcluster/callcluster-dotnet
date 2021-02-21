@@ -35,7 +35,7 @@ namespace callcluster_dotnet
 
         internal IEnumerable<FunctionDTO> GetFunctionDTOs()
         {
-
+            Console.WriteLine("Started exporting functions data");
             string LocationAsString(Location location)
             {
                 if(location.IsInMetadata)

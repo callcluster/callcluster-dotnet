@@ -29,28 +29,36 @@ namespace callcluster_dotnet
             
             var analysis = AnalyzeSyntaxMethod(syntax.Body, model);
             var op = model.GetOperation(syntax);
-            var visitor =  new ControlFlowGraphVisitor();
-            op.Accept(visitor);
-
-            analysis.CyclomaticComplexity = getCyclomaticComplexity(visitor.Graph);
-
+            if(op!=null){
+                var visitor =  new ControlFlowGraphVisitor();
+                op.Accept(visitor);
+                analysis.CyclomaticComplexity = getCyclomaticComplexity(visitor.Graph);
+            }
 
             return analysis;
         }
 
         private MethodAnalysisData AnalyzeSyntaxMethod(BlockSyntax syntax, SemanticModel model)
         {
-
-            var statementCounter = new StatementCounterWalker();
-            syntax.Accept(statementCounter);
-            var basiliWalker = new BasiliWalker();
-            syntax.Accept(basiliWalker);
-            return new MethodAnalysisData(){
-                NumberOfLines = syntax.ToString().Split('\n').Count(),
-                NumberOfStatements = statementCounter.NumberOfStatements,
-                BasiliComplexity = basiliWalker.Complexity,
-                written = true
-            };
+            if(syntax==null){
+                return new MethodAnalysisData(){
+                    NumberOfLines = 1,
+                    NumberOfStatements = 1,
+                    BasiliComplexity = 1,
+                    written=true
+                };
+            }else{
+                var statementCounter = new StatementCounterWalker();
+                syntax.Accept(statementCounter);
+                var basiliWalker = new BasiliWalker();
+                syntax.Accept(basiliWalker);
+                return new MethodAnalysisData(){
+                    NumberOfLines = syntax.ToString().Split('\n').Count(),
+                    NumberOfStatements = statementCounter.NumberOfStatements,
+                    BasiliComplexity = basiliWalker.Complexity,
+                    written = true
+                };
+            }
         }
 
         private int? getCyclomaticComplexity(ControlFlowGraph cfg)
